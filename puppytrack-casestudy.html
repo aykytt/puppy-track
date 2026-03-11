@@ -1,0 +1,952 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>PuppyTrack — UX/UI Case Study</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500;9..40,600;9..40,700&family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,700;0,9..144,900;1,9..144,300&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#F5F4F0;
+  --white:#FFFFFF;
+  --ink:#1A1A18;
+  --muted:#888880;
+  --border:#E4E3DE;
+  --primary:#E8520A;
+  --primary-light:#FFF0EB;
+  --success:#2D9E5F;
+  --danger:#D63B3B;
+  --body:'DM Sans',sans-serif;
+  --display:'Fraunces',serif;
+}
+html{scroll-behavior:smooth;}
+body{background:var(--bg);color:var(--ink);font-family:var(--body);-webkit-font-smoothing:antialiased;font-size:16px;line-height:1.6;}
+
+/* ── Lang toggle ── */
+.lang-bar{position:fixed;top:24px;right:32px;z-index:100;display:flex;gap:3px;background:rgba(255,255,255,.85);backdrop-filter:blur(8px);border:1px solid var(--border);border-radius:10px;padding:4px;}
+.lang-opt{padding:5px 12px;border:none;border-radius:7px;font-family:var(--body);font-size:12px;font-weight:700;cursor:pointer;background:none;color:var(--muted);transition:all .15s;}
+.lang-opt.active{background:var(--ink);color:#fff;}
+
+/* ── Layout ── */
+.container{max-width:900px;margin:0 auto;padding:0 32px;}
+section{padding:96px 0 0;}
+section:last-child{padding-bottom:120px;}
+
+/* ── Hero ── */
+.hero{min-height:100vh;display:flex;align-items:center;padding:0;position:relative;overflow:hidden;}
+.hero-bg{position:absolute;inset:0;background:linear-gradient(160deg,#1A1A18 0%,#2C2C28 60%,#3A3530 100%);}
+.hero-grain{position:absolute;inset:0;opacity:.04;background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E");}
+.hero-content{position:relative;z-index:2;width:100%;max-width:900px;margin:0 auto;padding:0 32px;display:grid;grid-template-columns:1fr 1fr;gap:64px;align-items:center;}
+.hero-left{}
+.hero-tag{display:inline-flex;align-items:center;gap:8px;background:rgba(232,82,10,.15);border:1px solid rgba(232,82,10,.3);border-radius:20px;padding:6px 14px;font-size:12px;font-weight:700;color:var(--primary);text-transform:uppercase;letter-spacing:.08em;margin-bottom:24px;}
+.hero-title{font-family:var(--display);font-size:clamp(42px,6vw,72px);font-weight:900;line-height:1.0;color:#fff;margin-bottom:8px;}
+.hero-title em{font-style:italic;color:var(--primary);}
+.hero-sub{font-size:18px;color:rgba(255,255,255,.55);margin-top:20px;line-height:1.6;font-weight:300;}
+.hero-meta{display:flex;gap:24px;margin-top:36px;flex-wrap:wrap;}
+.meta-item{display:flex;flex-direction:column;gap:3px;}
+.meta-label{font-size:10px;font-weight:700;color:rgba(255,255,255,.3);text-transform:uppercase;letter-spacing:.08em;}
+.meta-value{font-size:14px;font-weight:600;color:rgba(255,255,255,.7);}
+.hero-right{display:flex;justify-content:center;align-items:center;}
+/* Floating app component — no phone frame */
+.app-float{display:flex;flex-direction:column;gap:10px;width:260px;filter:drop-shadow(0 24px 48px rgba(0,0,0,.45));}
+.app-status-bar{display:flex;justify-content:space-between;font-size:11px;font-weight:700;color:rgba(255,255,255,.5);padding:0 4px;margin-bottom:2px;}
+.app-card{background:#F2F1ED;border-radius:20px;padding:20px 18px 18px;overflow:hidden;}
+.app-topbar{display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;}
+.app-logo{font-family:var(--display);font-size:15px;font-weight:900;color:var(--primary);}
+.app-avatar{width:30px;height:30px;border-radius:50%;background:#1A1A18;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;color:#fff;}
+.app-title{font-family:var(--display);font-size:26px;font-weight:900;color:#1A1A18;line-height:1.1;margin-bottom:14px;}
+.app-stats{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:12px;}
+.app-stat{background:#fff;border-radius:10px;padding:10px 8px;border:2px solid transparent;min-width:0;}
+.app-stat.n{border-color:#E4E3DE;}
+.app-stat.g{border-color:#2D9E5F;}
+.app-stat.r{border-color:#D63B3B;}
+.app-stat-l{font-size:7px;font-weight:700;color:#888;text-transform:uppercase;letter-spacing:.05em;margin-bottom:3px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.app-stat-v{font-size:18px;font-weight:700;color:#1A1A18;}
+.app-stat-v.g{color:#2D9E5F;}
+.app-stat-v.r{color:#D63B3B;}
+.app-btn{background:#fff;border-radius:14px;padding:16px 18px;display:flex;justify-content:space-between;align-items:center;box-shadow:0 1px 4px rgba(0,0,0,.07);margin-bottom:8px;}
+.app-btn:last-child{margin-bottom:0;}
+.app-btn-label{font-size:15px;font-weight:700;}
+.app-btn-label.g{color:#2D9E5F;}
+.app-btn-label.r{color:#D63B3B;}
+.app-circle{width:32px;height:32px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:15px;flex-shrink:0;}
+.app-circle.g{background:#E8F7EF;color:#2D9E5F;}
+.app-circle.r{background:#FDEAEA;color:#D63B3B;}
+
+
+/* ── Section headers ── */
+.section-tag{font-size:11px;font-weight:700;color:var(--primary);text-transform:uppercase;letter-spacing:.1em;margin-bottom:12px;}
+.section-title{font-family:var(--display);font-size:clamp(28px,4vw,48px);font-weight:900;line-height:1.1;color:var(--ink);margin-bottom:16px;}
+.section-title em{font-style:italic;color:var(--primary);}
+.section-body{font-size:17px;color:#444;line-height:1.7;max-width:620px;}
+.divider{height:1px;background:var(--border);margin:64px 0 0;}
+
+/* ── Problem section ── */
+.problem-grid{display:grid;grid-template-columns:1fr 1fr;gap:48px;align-items:start;margin-top:48px;}
+.problem-text{}
+.insight-card{background:var(--ink);color:#fff;border-radius:20px;padding:32px;display:flex;flex-direction:column;gap:20px;}
+.insight-item{display:flex;gap:14px;align-items:flex-start;}
+.insight-icon{width:36px;height:36px;border-radius:10px;background:rgba(232,82,10,.2);display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:16px;}
+.insight-text{font-size:14px;line-height:1.6;color:rgba(255,255,255,.8);}
+.insight-text strong{color:#fff;display:block;margin-bottom:4px;font-size:13px;text-transform:uppercase;letter-spacing:.05em;}
+
+/* ── Competitor section ── */
+.comp-intro{margin-top:16px;margin-bottom:40px;font-size:17px;color:#444;line-height:1.7;max-width:620px;}
+.comp-table{background:var(--white);border-radius:20px;overflow:hidden;box-shadow:0 2px 12px rgba(0,0,0,.06);}
+.comp-header{display:grid;grid-template-columns:180px 1fr 1fr 1fr 1fr;background:var(--ink);color:#fff;padding:14px 20px;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;gap:8px;}
+.comp-row{display:grid;grid-template-columns:180px 1fr 1fr 1fr 1fr;padding:16px 20px;gap:8px;border-bottom:1px solid var(--border);align-items:center;transition:background .15s;}
+.comp-row:last-child{border-bottom:none;}
+.comp-row:hover{background:#FAFAF8;}
+.comp-row.highlight{background:var(--primary-light);border-left:3px solid var(--primary);}
+.comp-name{font-size:14px;font-weight:700;color:var(--ink);}
+.comp-name span{display:block;font-size:11px;font-weight:400;color:var(--muted);margin-top:2px;}
+.comp-cell{font-size:13px;color:var(--muted);text-align:center;}
+.check{color:var(--success);font-size:16px;}
+.cross{color:#CCC;font-size:16px;}
+.star{color:var(--primary);font-size:14px;font-weight:700;}
+
+/* ── Research section ── */
+.research-grid{display:grid;grid-template-columns:1fr 1fr;gap:20px;margin-top:40px;}
+.research-card{background:var(--white);border-radius:16px;padding:28px;box-shadow:0 1px 6px rgba(0,0,0,.06);}
+.research-card.wide{grid-column:1/-1;}
+.rc-icon{font-size:28px;margin-bottom:14px;}
+.rc-title{font-size:13px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--muted);margin-bottom:10px;}
+.rc-body{font-size:15px;color:#444;line-height:1.65;}
+.quote-block{background:var(--bg);border-left:3px solid var(--primary);border-radius:0 12px 12px 0;padding:16px 20px;margin-top:14px;font-size:14px;font-style:italic;color:#555;line-height:1.6;}
+
+/* Persona */
+.persona-card{background:var(--ink);border-radius:20px;padding:32px;color:#fff;display:grid;grid-template-columns:auto 1fr;gap:24px;align-items:start;margin-top:40px;}
+.persona-avatar{width:72px;height:72px;border-radius:50%;background:rgba(232,82,10,.2);border:2px solid rgba(232,82,10,.4);display:flex;align-items:center;justify-content:center;font-size:32px;}
+.persona-name{font-family:var(--display);font-size:22px;font-weight:900;color:#fff;margin-bottom:4px;}
+.persona-bio{font-size:13px;color:rgba(255,255,255,.5);margin-bottom:16px;}
+.persona-tags{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:20px;}
+.ptag{background:rgba(255,255,255,.08);border-radius:20px;padding:4px 12px;font-size:12px;font-weight:600;color:rgba(255,255,255,.6);}
+.persona-goals{display:grid;grid-template-columns:1fr 1fr;gap:16px;}
+.pg-block{}
+.pg-label{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:rgba(255,255,255,.35);margin-bottom:8px;}
+.pg-item{font-size:13px;color:rgba(255,255,255,.7);line-height:1.6;display:flex;gap:8px;margin-bottom:6px;}
+.pg-item::before{content:'→';color:var(--primary);flex-shrink:0;}
+
+/* Journey map */
+.journey{margin-top:40px;background:var(--white);border-radius:20px;overflow:hidden;box-shadow:0 1px 6px rgba(0,0,0,.06);}
+.journey-header{background:var(--ink);color:#fff;padding:20px 28px;display:flex;justify-content:space-between;align-items:center;}
+.journey-title{font-family:var(--display);font-size:18px;font-weight:900;}
+.journey-sub{font-size:12px;color:rgba(255,255,255,.4);}
+.journey-stages{display:grid;grid-template-columns:repeat(5,1fr);}
+.jstage{padding:20px 16px;border-right:1px solid var(--border);}
+.jstage:last-child{border-right:none;}
+.js-name{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--muted);margin-bottom:8px;}
+.js-action{font-size:12px;font-weight:600;color:var(--ink);margin-bottom:8px;line-height:1.4;}
+.js-feeling{font-size:11px;color:#777;line-height:1.5;margin-bottom:10px;}
+.emotion-bar{height:4px;border-radius:2px;background:var(--border);}
+.emotion-fill{height:100%;border-radius:2px;transition:width .4s;}
+
+/* ── Process / Wireframes ── */
+.wf-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:20px;margin-top:40px;}
+.wf-card{background:var(--white);border-radius:16px;padding:20px;box-shadow:0 1px 6px rgba(0,0,0,.06);}
+.wf-screen{background:#F2F1ED;border-radius:10px;padding:16px;margin-bottom:14px;min-height:180px;display:flex;flex-direction:column;gap:8px;}
+.wf-bar{height:8px;background:#DDD;border-radius:4px;}
+.wf-bar.title{height:16px;width:60%;background:#BBB;}
+.wf-bar.short{width:40%;}
+.wf-bar.med{width:70%;}
+.wf-block{background:#DDD;border-radius:8px;height:44px;display:flex;align-items:center;justify-content:center;}
+.wf-block.tall{height:60px;}
+.wf-block.primary{background:rgba(232,82,10,.2);}
+.wf-label{font-size:13px;font-weight:700;color:var(--ink);margin-bottom:4px;}
+.wf-desc{font-size:12px;color:var(--muted);line-height:1.5;}
+
+/* ── Design decisions ── */
+.dd-grid{display:grid;grid-template-columns:1fr 1fr;gap:20px;margin-top:40px;}
+.dd-card{background:var(--white);border-radius:16px;padding:28px;box-shadow:0 1px 6px rgba(0,0,0,.06);}
+.dd-card.wide{grid-column:1/-1;}
+.dd-title{font-size:13px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--muted);margin-bottom:16px;}
+.color-row{display:flex;gap:10px;align-items:center;flex-wrap:wrap;}
+.swatch{width:48px;height:48px;border-radius:12px;display:flex;align-items:flex-end;justify-content:center;padding-bottom:4px;}
+.swatch span{font-size:8px;font-weight:700;color:rgba(255,255,255,.7);}
+.swatch.dark span{color:rgba(0,0,0,.4);}
+.type-sample{margin-bottom:12px;}
+.ts-display{font-family:var(--display);font-size:28px;font-weight:900;line-height:1.1;color:var(--ink);}
+.ts-body{font-family:var(--body);font-size:15px;color:#555;margin-top:6px;}
+.ts-label{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:var(--muted);margin-top:8px;}
+
+/* Before/After */
+.ba-grid{display:grid;grid-template-columns:1fr 1fr;gap:20px;margin-top:40px;}
+.ba-card{border-radius:16px;overflow:hidden;box-shadow:0 1px 6px rgba(0,0,0,.06);}
+.ba-header{padding:12px 18px;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.07em;}
+.ba-header.before{background:#F5F5F5;color:#888;}
+.ba-header.after{background:var(--primary);color:#fff;}
+.ba-body{background:var(--white);padding:20px;}
+.ba-desc{font-size:13px;color:#555;line-height:1.6;margin-top:12px;}
+
+/* Stat card before/after */
+.mini-stats{display:grid;grid-template-columns:1fr 1fr 1fr;gap:6px;margin-bottom:10px;}
+.ms{border-radius:8px;padding:10px 8px;}
+.ms-l{font-size:7px;font-weight:700;color:#888;text-transform:uppercase;margin-bottom:2px;}
+.ms-v{font-size:14px;font-weight:700;}
+
+/* ── Principles ── */
+.principles-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:20px;margin-top:40px;}
+.principle-card{background:var(--ink);border-radius:20px;padding:28px;color:#fff;}
+.pc-num{font-family:var(--display);font-size:48px;font-weight:900;color:rgba(232,82,10,.3);line-height:1;margin-bottom:12px;}
+.pc-title{font-size:17px;font-weight:700;color:#fff;margin-bottom:8px;}
+.pc-body{font-size:13px;color:rgba(255,255,255,.55);line-height:1.65;}
+
+/* ── Final screens ── */
+.screens-scroll{display:flex;gap:20px;margin-top:40px;overflow-x:auto;padding-bottom:16px;scrollbar-width:none;}
+.screens-scroll::-webkit-scrollbar{display:none;}
+.screen-item{flex-shrink:0;width:180px;}
+.screen-phone{background:#1A1A18;border-radius:28px;border:4px solid #333;overflow:hidden;box-shadow:0 16px 40px rgba(0,0,0,.25);}
+.screen-img{background:#F2F1ED;height:320px;display:flex;flex-direction:column;padding:12px;gap:6px;}
+.screen-label{font-size:12px;font-weight:600;color:var(--muted);margin-top:10px;text-align:center;}
+
+/* Prototype embed */
+.proto-wrap{margin-top:40px;background:var(--ink);border-radius:24px;padding:48px;display:flex;flex-direction:column;align-items:center;gap:24px;}
+.proto-label{font-family:var(--display);font-size:22px;font-weight:900;color:#fff;}
+.proto-sub{font-size:15px;color:rgba(255,255,255,.4);text-align:center;max-width:400px;}
+.proto-btn{background:var(--primary);color:#fff;border:none;border-radius:12px;padding:14px 32px;font-family:var(--body);font-size:15px;font-weight:700;cursor:pointer;text-decoration:none;display:inline-flex;align-items:center;gap:8px;transition:all .18s;}
+.proto-btn:hover{background:#D4470A;transform:translateY(-2px);}
+.proto-frame{width:100%;max-width:440px;height:700px;border:none;border-radius:20px;overflow:hidden;box-shadow:0 40px 80px rgba(0,0,0,.5);}
+
+/* What I learned */
+.learned-card{background:var(--white);border-radius:20px;padding:40px;box-shadow:0 1px 6px rgba(0,0,0,.06);margin-top:40px;display:grid;grid-template-columns:1fr 2fr;gap:40px;align-items:start;}
+.lc-left{}
+.lc-num{font-family:var(--display);font-size:72px;font-weight:900;color:var(--primary);line-height:1;}
+.lc-label{font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:var(--muted);margin-top:4px;}
+.lc-body{font-size:16px;color:#444;line-height:1.75;}
+
+/* Next steps */
+.next-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-top:40px;}
+.next-card{background:var(--white);border-radius:16px;padding:24px;box-shadow:0 1px 6px rgba(0,0,0,.06);border-top:3px solid var(--border);}
+.next-card.active{border-top-color:var(--primary);}
+.nc-phase{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:var(--muted);margin-bottom:10px;}
+.nc-title{font-size:16px;font-weight:700;color:var(--ink);margin-bottom:8px;}
+.nc-items{font-size:13px;color:#666;line-height:1.8;}
+
+/* Animations */
+@keyframes fadeUp{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
+.animate{opacity:0;transform:translateY(20px);transition:opacity .6s ease,transform .6s ease;}
+.animate.visible{opacity:1;transform:translateY(0);}
+
+/* Responsive */
+@media(max-width:700px){
+  /* Padding */
+  .container{padding:0 16px;}
+  .hero-content{padding:0 16px;}
+  section{padding:64px 0 0;}
+
+  /* Grids → tek sütun */
+  .hero-content,.problem-grid,.research-grid,.dd-grid,.ba-grid,.principles-grid,.next-grid{grid-template-columns:1fr;}
+  .hero-right{display:none;}
+  .persona-card{grid-template-columns:1fr;}
+  .persona-goals{grid-template-columns:1fr;}
+  .learned-card{grid-template-columns:1fr;}
+  .wf-grid{grid-template-columns:1fr 1fr;}
+  .journey-stages{grid-template-columns:1fr 1fr;}
+
+  /* Rakip tablosu — yatay scroll ile koru */
+  .comp-table-wrap{overflow-x:auto;-webkit-overflow-scrolling:touch;margin:0 -16px;padding:0 16px;}
+  .comp-header,.comp-row{grid-template-columns:120px 52px 64px 56px 56px;font-size:10px;padding:10px 12px;gap:4px;}
+
+  /* Typography */
+  .section-title{font-size:clamp(22px,6vw,32px);}
+  .section-body{font-size:15px;}
+
+  /* Kapanış banner */
+  .closing-inner{padding:40px 24px!important;flex-direction:column!important;}
+
+  /* Proto */
+  .proto-wrap{padding:32px 16px;}
+  .proto-frame{height:540px;}
+
+  /* Inline 3-sütun gridleri yakala */
+  [style*="grid-template-columns: 1fr 1fr 1fr"],
+  [style*="grid-template-columns:1fr 1fr 1fr"]{grid-template-columns:1fr!important;}
+}
+</style>
+</head>
+<body>
+
+<!-- Lang toggle -->
+<div class="lang-bar">
+  <button class="lang-opt active" onclick="setLang('tr')">TR</button>
+  <button class="lang-opt" onclick="setLang('en')">EN</button>
+</div>
+
+<!-- ══════════════════════════════════════════════
+     HERO
+══════════════════════════════════════════════ -->
+<section class="hero">
+  <div class="hero-bg"></div>
+  <div class="hero-grain"></div>
+  <div class="hero-content">
+    <div class="hero-left">
+      <div class="hero-tag">🐾 <span data-tr="UX/UI Case Study" data-en="UX/UI Case Study">UX/UI Case Study</span></div>
+      <h1 class="hero-title">Puppy<em>Track</em></h1>
+      <p class="hero-sub" data-tr="Yavru köpek tuvalet eğitimini takip etmenin en sade yolu. Kayıt iki dokunuş. Analiz otomatik." data-en="The simplest way to track puppy potty training. Two taps to log. Automatic analysis."></p>
+      <div class="hero-meta">
+        <div class="meta-item">
+          <span class="meta-label" data-tr="Rol" data-en="Role"></span>
+          <span class="meta-value" data-tr="UX/UI Tasarımcı" data-en="UX/UI Designer"></span>
+        </div>
+        <div class="meta-item">
+          <span class="meta-label" data-tr="Platform" data-en="Platform"></span>
+          <span class="meta-value">iOS / Android</span>
+        </div>
+        <div class="meta-item">
+          <span class="meta-label" data-tr="Durum" data-en="Status"></span>
+          <span class="meta-value" style="color:#E8520A;" data-tr="v1" data-en="v1"></span>
+        </div>
+      </div>
+    </div>
+    <div class="hero-right">
+      <div class="app-float">
+        <div class="app-card" style="padding:22px 20px;">
+          <div class="app-btn">
+            <span class="app-btn-label g" data-tr="Doğru Yer" data-en="Correct Spot"></span>
+            <div class="app-circle g">✓</div>
+          </div>
+          <div class="app-btn" style="margin-bottom:0;">
+            <span class="app-btn-label r" data-tr="Kaza Oldu" data-en="Accident"></span>
+            <div class="app-circle r">✓</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════════════════════════════════════
+     PROBLEM
+══════════════════════════════════════════════ -->
+<div class="divider"></div>
+<section>
+  <div class="container animate">
+    <p class="section-tag" data-tr="Problem" data-en="Problem"></p>
+    <h2 class="section-title" data-tr="Bilgi çok, <em>yön yok</em>" data-en="Too much information, <em>no direction</em>"></h2>
+    <div class="problem-grid">
+      <div class="problem-text">
+        <p class="section-body" data-tr="Yavru köpek sahipleri tuvalet eğitimine nereden başlayacaklarını, ne zaman çıkacaklarını ve kazaların neden tekrarlandığını çoğu zaman bilmez. İnternet, forum ve videolardan gelen bilgi fazlalığı bu belirsizliği daha da artırır. Kullanıcının ihtiyacı bilgi değil; sürecin görünür olmasıdır." data-en="New puppy owners often don't know where to start with potty training, when to take them outside, or why accidents keep repeating. The flood of information from forums, videos, and blogs makes this confusion worse. What users need isn't more information — they need the process to be visible."></p>
+        <div class="quote-block" style="margin-top:24px;" data-tr='"Sabah uyandığımda kaza mı yaptı, ne zaman çıkardım, kaç kez tuvalet oldu — hiçbirini hatırlamıyordum. Her gün sıfırdan başlıyordum gibi hissettim."' data-en='"When I woke up I couldn\'t remember if there was an accident, when I last took her out, how many times she went. Every day felt like starting over."'></div>
+      </div>
+      <div class="insight-card">
+        <div class="insight-item">
+          <div class="insight-icon">📊</div>
+          <div>
+            <div class="insight-text"><strong data-tr="Örüntü görünmüyor" data-en="Patterns invisible"></strong><span data-tr="Kazaların hangi saatte, hangi koşullarda gerçekleştiği takip edilemiyor. Kullanıcı aynı hatayı tekrarlıyor." data-en="Users can't track when accidents happen or under what conditions. The same mistakes repeat."></span></div>
+          </div>
+        </div>
+        <div class="insight-item">
+          <div class="insight-icon">🕐</div>
+          <div>
+            <div class="insight-text"><strong data-tr="Zamanlama tahmin edilemiyor" data-en="Timing unpredictable"></strong><span data-tr="Köpeğin ne zaman tuvalete çıkması gerektiği sezgiyle tahmin ediliyor, sistemli bir yaklaşım yok." data-en="Owners guess when it's time to go out, with no systematic approach."></span></div>
+          </div>
+        </div>
+        <div class="insight-item">
+          <div class="insight-icon">😵</div>
+          <div>
+            <div class="insight-text"><strong data-tr="Kontrol hissi kayboluyor" data-en="Loss of control"></strong><span data-tr="İlerleme ölçülemiyor. Motivasyon düşüyor. Süreç kaotik hissettiriyor." data-en="Progress can't be measured. Motivation drops. The process feels chaotic."></span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════════════════════════════════════
+     COMPETITOR ANALYSIS
+══════════════════════════════════════════════ -->
+<div class="divider"></div>
+<section>
+  <div class="container animate">
+    <p class="section-tag" data-tr="Pazar Analizi" data-en="Market Analysis"></p>
+    <h2 class="section-title" data-tr="Rakipler her şeyi çözmeye çalışırken <em>asıl sorunu kaçırıyor</em>" data-en="Competitors try to solve everything, <em>missing the core problem</em>"></h2>
+    <p class="comp-intro" data-tr="Mevcut uygulamaları incelediğimde ortak bir örüntü gördüm: özellik yüklemesi. Beslenme takibi, aşı takvimi, antrenman videoları, sosyal feed… Kullanıcı uygulamayı açtığında asıl sorusunu — şimdi ne yapmalıyım? — yanıtsız bırakılıyor." data-en="When I reviewed existing apps, I noticed a common pattern: feature overload. Feeding tracker, vaccination schedule, training videos, social feed... When a user opens the app, their core question — what should I do right now? — goes unanswered."></p>
+    <div class="comp-table-wrap">
+    <div class="comp-table">
+      <div class="comp-header">
+        <div data-tr="Uygulama" data-en="App"></div>
+        <div style="text-align:center;" data-tr="Hızlı Kayıt" data-en="Quick Log"></div>
+        <div style="text-align:center;" data-tr="Otomatik Analiz" data-en="Auto Analysis"></div>
+        <div style="text-align:center;" data-tr="Tahmin" data-en="Prediction"></div>
+        <div style="text-align:center;" data-tr="Sadelik" data-en="Simplicity"></div>
+      </div>
+      <div class="comp-row">
+        <div class="comp-name">Dogo<span data-tr="Köpek eğitim platformu" data-en="Dog training platform"></span></div>
+        <div class="comp-cell"><span class="cross">—</span></div>
+        <div class="comp-cell"><span class="cross">—</span></div>
+        <div class="comp-cell"><span class="cross">—</span></div>
+        <div class="comp-cell"><span class="cross">—</span></div>
+      </div>
+      <div class="comp-row">
+        <div class="comp-name">Pupford<span data-tr="Eğitim + içerik odaklı" data-en="Training + content focused"></span></div>
+        <div class="comp-cell"><span class="cross">—</span></div>
+        <div class="comp-cell"><span class="cross">—</span></div>
+        <div class="comp-cell"><span class="cross">—</span></div>
+        <div class="comp-cell"><span class="cross">—</span></div>
+      </div>
+      <div class="comp-row">
+        <div class="comp-name">Puppy Log<span data-tr="Genel günlük takip" data-en="General daily tracker"></span></div>
+        <div class="comp-cell"><span class="check">✓</span></div>
+        <div class="comp-cell"><span class="cross">—</span></div>
+        <div class="comp-cell"><span class="cross">—</span></div>
+        <div class="comp-cell"><span class="cross">—</span></div>
+      </div>
+      <div class="comp-row">
+        <div class="comp-name">Dog Log<span data-tr="Basit kayıt uygulaması" data-en="Simple logging app"></span></div>
+        <div class="comp-cell"><span class="check">✓</span></div>
+        <div class="comp-cell"><span class="cross">—</span></div>
+        <div class="comp-cell"><span class="cross">—</span></div>
+        <div class="comp-cell"><span class="check">✓</span></div>
+      </div>
+      <div class="comp-row highlight">
+        <div class="comp-name" style="color:var(--primary);">PuppyTrack<span data-tr="Bu proje" data-en="This project"></span></div>
+        <div class="comp-cell"><span class="check">✓</span></div>
+        <div class="comp-cell"><span class="check">✓</span></div>
+        <div class="comp-cell"><span class="check">✓</span></div>
+        <div class="comp-cell"><span class="star">★</span></div>
+      </div>
+    </div><!-- /comp-table-wrap -->
+  </div>
+</section>
+<!-- ══════════════════════════════════════════════
+     USER RESEARCH
+══════════════════════════════════════════════ -->
+<div class="divider"></div>
+<section>
+  <div class="container animate">
+    <p class="section-tag" data-tr="Kullanıcı Araştırması" data-en="User Research"></p>
+    <h2 class="section-title" data-tr="Gerçek kullanıcılarla <em>konuştum</em>" data-en="I talked to <em>real users</em>"></h2>
+    <p class="section-body" data-tr="Yeni köpek sahibi olan kişilerle birebir görüşmeler yaptım. Buna ek olarak Reddit gibi platformlarda yavru köpek sahiplerinin paylaştığı deneyimleri sistematik olarak inceledim. Bu araştırma, tasarım kararlarımın temelini oluşturdu." data-en="I conducted one-on-one interviews with new dog owners. I also systematically reviewed experiences shared by puppy owners on platforms like Reddit. This research formed the foundation of my design decisions."></p>
+
+    <!-- Insights -->
+    <div class="research-grid" style="margin-top:32px;">
+      <div class="research-card">
+        <div class="rc-icon">🗓️</div>
+        <div class="rc-title" data-tr="Temel İçgörü 1" data-en="Key Insight 1"></div>
+        <div class="rc-body" data-tr="Kullanıcılar kaza sonrasında ne yapmaları gerektiğini biliyordu — ama ne zaman yapmaları gerektiğini bilmiyordu. Zamanlama belirsizliği en büyük stres kaynağıydı." data-en="Users knew what to do after an accident — but not when to act proactively. Timing uncertainty was the biggest source of stress."></div>
+        <div class="quote-block" data-tr='"Ne zaman çıkaracağımı bilemiyordum. Bir saatte bir mi, iki saatte bir mi? Hiçbir şey çalışmıyor gibiydi."' data-en='"I had no idea when to take her out. Every hour? Two hours? Nothing seemed to work."'></div>
+      </div>
+      <div class="research-card">
+        <div class="rc-icon">📱</div>
+        <div class="rc-title" data-tr="Temel İçgörü 2" data-en="Key Insight 2"></div>
+        <div class="rc-body" data-tr="Mevcut uygulamalar çok fazla adım gerektiriyordu. Kullanıcılar kaza anında uygulamayı açmak yerine not defterine veya mesaj uygulamasına geçiyordu — bu da bir çözüm değil, ekstra iş yükü anlamına geliyordu." data-en="Existing apps required too many steps. In the moment of an accident, users switched to their notes or messaging app — which wasn't a solution, just additional cognitive load."></div>
+        <div class="quote-block" data-tr='"Kaza olunca önce onu temizliyorsun, sonra uygulamayı açıyorsun, sonra kategori seçiyorsun... Artık açmıyorum."' data-en='"When there\'s an accident, first you clean it up, then open the app, then select a category... I just stopped opening it."'></div>
+      </div>
+      <div class="research-card">
+        <div class="rc-icon">📉</div>
+        <div class="rc-title" data-tr="Temel İçgörü 3" data-en="Key Insight 3"></div>
+        <div class="rc-body" data-tr="İlerlemeyi göremeyince motivasyon hızla düşüyordu. Kullanıcılar 'Daha iyi mi oluyoruz?' sorusuna cevap bulamadığında süreci bırakıyordu." data-en="Without visible progress, motivation dropped quickly. When users couldn't answer 'Are we improving?' they gave up on tracking altogether."></div>
+        <div class="quote-block" data-tr='"Üçüncü haftada hâlâ kaza yapıyordu. Bir şeyler yanlış mı yapıyorum? Bilmiyorum, göremiyorum ki."' data-en='"Third week and still accidents. Am I doing something wrong? I don\'t know, I can\'t see any progress."'></div>
+      </div>
+      <div class="research-card">
+        <div class="rc-icon">🔍</div>
+        <div class="rc-title" data-tr="Netnografik Araştırma" data-en="Netnographic Research"></div>
+        <div class="rc-body" data-tr="Reddit'teki r/puppy101 ve r/dogs topluluklarında yüzlerce paylaşım incelendi. En sık tekrar eden şikayet: bilginin fazlalığı değil, hangi bilginin şu an geçerli olduğunu anlayamamak." data-en="Hundreds of posts in r/puppy101 and r/dogs communities were reviewed. The most recurring complaint: not too little information, but not knowing which information applies right now."></div>
+      </div>
+    </div>
+
+    <!-- Persona -->
+    <div class="persona-card animate">
+      <div class="persona-avatar">👩</div>
+      <div>
+        <div class="persona-name" data-tr="Zeynep, 28" data-en="Zeynep, 28"></div>
+        <div class="persona-bio" data-tr="Pazarlama uzmanı · İlk köpeği · 3 aylık yavru köpek sahibi" data-en="Marketing specialist · First dog · 3-month-old puppy owner"></div>
+        <div class="persona-tags">
+          <span class="ptag" data-tr="Teknoloji meraklısı" data-en="Tech-savvy"></span>
+          <span class="ptag" data-tr="Düzenli" data-en="Organized"></span>
+          <span class="ptag" data-tr="Ev ofisi" data-en="Home office"></span>
+          <span class="ptag" data-tr="Sabırsız ama kararlı" data-en="Impatient but determined"></span>
+        </div>
+        <div class="persona-goals">
+          <div class="pg-block">
+            <div class="pg-label" data-tr="Hedefleri" data-en="Goals"></div>
+            <div class="pg-item" data-tr="Kazaları azaltmak ve örüntüyü görmek" data-en="Reduce accidents and see the pattern"></div>
+            <div class="pg-item" data-tr="İlerlemeyi ölçmek, boşa gitmediğini hissetmek" data-en="Measure progress and feel the effort pays off"></div>
+            <div class="pg-item" data-tr="Ne zaman çıkacağını önceden tahmin etmek" data-en="Predict when to take her out in advance"></div>
+          </div>
+          <div class="pg-block">
+            <div class="pg-label" data-tr="Hayal kırıklıkları" data-en="Frustrations"></div>
+            <div class="pg-item" data-tr="Kayıt uygulamaları çok adım istiyor" data-en="Logging apps require too many steps"></div>
+            <div class="pg-item" data-tr="Veriler var ama anlam çıkaramıyor" data-en="Data exists but she can't make sense of it"></div>
+            <div class="pg-item" data-tr="İlerleme görünmüyor, motivasyon düşüyor" data-en="Progress invisible, motivation drops"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Journey map -->
+    <div class="journey animate">
+      <div class="journey-header">
+        <div>
+          <div class="journey-title" data-tr="Kullanıcı Yolculuğu" data-en="User Journey Map"></div>
+          <div class="journey-sub" data-tr="Zeynep'in tuvalet kazası sonrası deneyimi" data-en="Zeynep's experience after a potty accident"></div>
+        </div>
+      </div>
+      <div class="journey-stages">
+        <div class="jstage">
+          <div class="js-name" data-tr="Farkına varma" data-en="Discovery"></div>
+          <div class="js-action" data-tr="Kaza fark ediliyor" data-en="Notices accident"></div>
+          <div class="js-feeling" data-tr="Sinirli, telaşlı" data-en="Frustrated, panicked"></div>
+          <div class="emotion-bar"><div class="emotion-fill" style="width:20%;background:#D63B3B;"></div></div>
+        </div>
+        <div class="jstage">
+          <div class="js-name" data-tr="Tepki" data-en="Reaction"></div>
+          <div class="js-action" data-tr="Temizlik yapılıyor" data-en="Cleans up"></div>
+          <div class="js-feeling" data-tr="Yorgun, umursuz" data-en="Tired, indifferent"></div>
+          <div class="emotion-bar"><div class="emotion-fill" style="width:30%;background:#F5C542;"></div></div>
+        </div>
+        <div class="jstage">
+          <div class="js-name" data-tr="Kayıt" data-en="Logging"></div>
+          <div class="js-action" data-tr="Uygulamayı açmaya çalışıyor" data-en="Tries to open app"></div>
+          <div class="js-feeling" data-tr="Uygulama karmaşık, vazgeçiyor" data-en="App complex, gives up"></div>
+          <div class="emotion-bar"><div class="emotion-fill" style="width:15%;background:#D63B3B;"></div></div>
+        </div>
+        <div class="jstage">
+          <div class="js-name" data-tr="Sorgulama" data-en="Reflection"></div>
+          <div class="js-action" data-tr="'Neden yine oldu?' diye düşünüyor" data-en="Wonders 'why again?'"></div>
+          <div class="js-feeling" data-tr="Çaresiz, ilerleme göremyor" data-en="Helpless, can't see progress"></div>
+          <div class="emotion-bar"><div class="emotion-fill" style="width:25%;background:#F5C542;"></div></div>
+        </div>
+        <div class="jstage" style="background:rgba(232,82,10,.04);">
+          <div class="js-name" style="color:var(--primary);" data-tr="PuppyTrack ile" data-en="With PuppyTrack"></div>
+          <div class="js-action" data-tr="2 dokunuşta kayıt, analiz otomatik" data-en="2 taps to log, analysis automatic"></div>
+          <div class="js-feeling" data-tr="Kontrol altında, ilerliyor" data-en="In control, progressing"></div>
+          <div class="emotion-bar"><div class="emotion-fill" style="width:85%;background:#2D9E5F;"></div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════════════════════════════════════
+     DESIGN PRINCIPLES
+══════════════════════════════════════════════ -->
+<div class="divider"></div>
+<section>
+  <div class="container animate">
+    <p class="section-tag" data-tr="Tasarım Prensipleri" data-en="Design Principles"></p>
+    <h2 class="section-title" data-tr="Her karar bu <em>üç ilkeye</em> dayanıyor" data-en="Every decision rests on <em>three principles</em>"></h2>
+    <div class="principles-grid">
+      <div class="principle-card">
+        <div class="pc-num">01</div>
+        <div class="pc-title" data-tr="Hız önce gelir" data-en="Speed first"></div>
+        <div class="pc-body" data-tr="Kayıt maksimum 2 dokunuşta tamamlanmalı. Kaza anında kullanıcının zamanı ve sabrı yoktur. Sürtünme ne kadar azsa uygulama o kadar kullanılır." data-en="Logging must complete in max 2 taps. In the moment of an accident, the user has no time or patience. The less friction, the more the app gets used."></div>
+      </div>
+      <div class="principle-card">
+        <div class="pc-num">02</div>
+        <div class="pc-title" data-tr="Veri anlamlı olmalı" data-en="Data must mean something"></div>
+        <div class="pc-body" data-tr="Ham sayı yeterli değil. Uygulama örüntüyü görmeli, tahmin üretmeli ve kullanıcıya 'şimdi ne yapmalıyım?' sorusuna cevap vermelidir." data-en="Raw numbers aren't enough. The app must surface patterns, generate predictions, and answer the user's question: what should I do right now?"></div>
+      </div>
+      <div class="principle-card">
+        <div class="pc-num">03</div>
+        <div class="pc-title" data-tr="Az ama doğru" data-en="Less but right"></div>
+        <div class="pc-body" data-tr="Rakipler her şeyi çözmeye çalışırken bu tek problemi iyi çözüyor. Kapsam kısıtlaması bir zayıflık değil, bilinçli bir UX kararıdır." data-en="Competitors try to solve everything; this solves one problem well. Scope constraint isn't a weakness — it's a deliberate UX decision."></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════════════════════════════════════
+     WIREFRAMES / PROCESS
+══════════════════════════════════════════════ -->
+<div class="divider"></div>
+<section>
+  <div class="container animate">
+    <p class="section-tag" data-tr="Süreç" data-en="Process"></p>
+    <h2 class="section-title" data-tr="Lo-fi'dan <em>hi-fi'ye</em>" data-en="From <em>lo-fi</em> to hi-fi"></h2>
+    <p class="section-body" data-tr="Kabaca çizilmiş taslaklar üzerinden temel akışlar test edildi. Bu aşamada odak nokta görsel detaylar değil, kullanıcının kaç adımda hedefe ulaşabildiğiydi. Her iterasyonda bir adım azaltıldı." data-en="Basic flows were tested on rough sketches. At this stage, the focus wasn't visual details but how many steps it took the user to complete a goal. Each iteration reduced one step."></p>
+    <div class="wf-grid">
+      <div class="wf-card">
+        <div class="wf-screen">
+          <div class="wf-bar title"></div>
+          <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:4px;margin:4px 0;">
+            <div style="background:#DDD;border-radius:6px;height:36px;"></div>
+            <div style="background:#DDD;border-radius:6px;height:36px;"></div>
+            <div style="background:#DDD;border-radius:6px;height:36px;"></div>
+          </div>
+          <div class="wf-block tall"></div>
+          <div class="wf-block"></div>
+          <div class="wf-block"></div>
+        </div>
+        <div class="wf-label" data-tr="v1 — Ana Ekran" data-en="v1 — Home Screen"></div>
+        <div class="wf-desc" data-tr="İlk versiyonda durum seçici ayrı bir sayfadaydı. Kullanıcı 4 adımda kayıt yapabiliyordu." data-en="In the first version, the status selector was on a separate page. Users needed 4 steps to log."></div>
+      </div>
+      <div class="wf-card">
+        <div class="wf-screen">
+          <div class="wf-bar title"></div>
+          <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:4px;margin:4px 0;">
+            <div style="background:#DDD;border-radius:6px;height:36px;"></div>
+            <div style="background:#C8E6C9;border-radius:6px;height:36px;border:1.5px solid #2D9E5F;"></div>
+            <div style="background:#FFCDD2;border-radius:6px;height:36px;border:1.5px solid #D63B3B;"></div>
+          </div>
+          <div class="wf-block primary"></div>
+          <div class="wf-block primary"></div>
+        </div>
+        <div class="wf-label" data-tr="v2 — Stat Kartları" data-en="v2 — Stat Cards"></div>
+        <div class="wf-desc" data-tr="Stat kartlarının görsel önemi test edildi. Renkli zemin mi, renkli border mı? Borderın daha net okunduğu görüldü." data-en="The visual weight of stat cards was tested. Colored background vs colored border? Border proved cleaner to read."></div>
+      </div>
+      <div class="wf-card">
+        <div class="wf-screen">
+          <div class="wf-bar title"></div>
+          <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:4px;margin:4px 0;">
+            <div style="background:#DDD;border-radius:6px;height:36px;"></div>
+            <div style="background:#DDD;border-radius:6px;height:36px;border:1.5px solid #2D9E5F;"></div>
+            <div style="background:#DDD;border-radius:6px;height:36px;border:1.5px solid #D63B3B;"></div>
+          </div>
+          <div style="background:rgba(232,82,10,.12);border-radius:8px;height:44px;"></div>
+          <div class="wf-block primary tall"></div>
+          <div class="wf-block tall" style="background:rgba(211,59,59,.15);"></div>
+        </div>
+        <div class="wf-label" data-tr="v3 — Final Akış" data-en="v3 — Final Flow"></div>
+        <div class="wf-desc" data-tr="Kayıt 2 dokunuşa indi. TAHMİN banner'ı nötr hale getirildi. Semantik renk çakışması giderildi." data-en="Logging reduced to 2 taps. PREDICTION banner made neutral. Semantic color conflict resolved."></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════════════════════════════════════
+     DESIGN DECISIONS
+══════════════════════════════════════════════ -->
+<div class="divider"></div>
+<section>
+  <div class="container animate">
+    <p class="section-tag" data-tr="Tasarım Kararları" data-en="Design Decisions"></p>
+    <h2 class="section-title" data-tr="Her seçimin <em>bir nedeni var</em>" data-en="Every choice has <em>a reason</em>"></h2>
+    <div class="dd-grid">
+      <div class="dd-card">
+        <div class="dd-title" data-tr="Renk Sistemi" data-en="Color System"></div>
+        <div class="color-row">
+          <div style="display:flex;flex-direction:column;align-items:center;gap:6px;">
+            <div style="width:48px;height:48px;border-radius:12px;background:#E8520A;"></div>
+            <span style="font-size:10px;color:var(--muted);font-weight:600;">#E8520A</span>
+          </div>
+          <div style="display:flex;flex-direction:column;align-items:center;gap:6px;">
+            <div style="width:48px;height:48px;border-radius:12px;background:#2D9E5F;"></div>
+            <span style="font-size:10px;color:var(--muted);font-weight:600;">#2D9E5F</span>
+          </div>
+          <div style="display:flex;flex-direction:column;align-items:center;gap:6px;">
+            <div style="width:48px;height:48px;border-radius:12px;background:#D63B3B;"></div>
+            <span style="font-size:10px;color:var(--muted);font-weight:600;">#D63B3B</span>
+          </div>
+          <div style="display:flex;flex-direction:column;align-items:center;gap:6px;">
+            <div style="width:48px;height:48px;border-radius:12px;background:#F2F1ED;border:1px solid #E4E3DE;"></div>
+            <span style="font-size:10px;color:var(--muted);font-weight:600;">#F2F1ED</span>
+          </div>
+          <div style="display:flex;flex-direction:column;align-items:center;gap:6px;">
+            <div style="width:48px;height:48px;border-radius:12px;background:#1A1A18;"></div>
+            <span style="font-size:10px;color:var(--muted);font-weight:600;">#1A1A18</span>
+          </div>
+        </div>
+        <p style="font-size:13px;color:#666;line-height:1.6;margin-top:16px;" data-tr="Turuncu primary, güven ve enerji hissi yaratıyor — tehlike değil, ilerleme. Yeşil başarıyı, kırmızı kazayı temsil ederken semantik çakışmayı önlemek için renk sadece sınırlı noktalarda kullanıldı." data-en="Orange primary creates trust and energy — not danger, progress. Green means success, red means accident, but to avoid semantic conflict, color is used at limited touchpoints only."></p>
+      </div>
+      <div class="dd-card">
+        <div class="dd-title" data-tr="Tipografi" data-en="Typography"></div>
+        <div class="type-sample">
+          <div class="ts-display">Fraunces</div>
+          <div class="ts-label" data-tr="Display / Başlıklar — Güçlü, karakterli, sıcak" data-en="Display / Headlines — Strong, characterful, warm"></div>
+        </div>
+        <div class="type-sample">
+          <div class="ts-body">DM Sans — 400, 500, 600, 700</div>
+          <div class="ts-label" data-tr="Body / UI — Okunabilir, nötr, işlevsel" data-en="Body / UI — Readable, neutral, functional"></div>
+        </div>
+        <p style="font-size:13px;color:#666;line-height:1.6;margin-top:8px;" data-tr="Serif başlık + sans-serif body kombinasyonu editorial bir his yaratıyor. Çoğu dog app'inin kullandığı rounded/playful fontlardan bilinçli olarak uzaklaşıldı." data-en="Serif headline + sans-serif body creates an editorial feel. A deliberate departure from the rounded/playful fonts most dog apps use."></p>
+      </div>
+
+      <!-- Before / After -->
+      <div class="dd-card wide">
+        <div class="dd-title" data-tr="Önemli İterasyon — Stat Kartları" data-en="Key Iteration — Stat Cards"></div>
+        <div class="ba-grid" style="margin-top:0;">
+          <div class="ba-card">
+            <div class="ba-header before" data-tr="❌ Öncesi — Renkli zemin" data-en="❌ Before — Colored background"></div>
+            <div class="ba-body">
+              <div class="mini-stats">
+                <div class="ms" style="background:#fff;border:1px solid #E4E3DE;"><div class="ms-l">BUGÜN</div><div class="ms-v">5</div></div>
+                <div class="ms" style="background:#E8F7EF;"><div class="ms-l">BAŞARI</div><div class="ms-v" style="color:#2D9E5F;">%40</div></div>
+                <div class="ms" style="background:#FDEAEA;"><div class="ms-l">KAZA</div><div class="ms-v" style="color:#D63B3B;">%60</div></div>
+              </div>
+              <div style="background:#FFF0EB;border-radius:8px;padding:10px 12px;font-size:12px;color:#E8520A;font-weight:600;">⏱ TAHMİN · 35 dk içinde...</div>
+              <div class="ba-desc" data-tr="TAHMİN banner'ının turuncu rengi, KAZA kartının kırmızısıyla semantik çakışma yaratıyordu. Her ikisi de 'dikkat' sinyali verdiğinden kullanıcı neye odaklanacağını bilemiyordu." data-en="The orange PREDICTION banner semantically clashed with the red ACCIDENT card. Both signaled 'attention', leaving users unsure what to focus on."></div>
+            </div>
+          </div>
+          <div class="ba-card">
+            <div class="ba-header after" data-tr="✓ Sonrası — Border ile semantik ayrım" data-en="✓ After — Semantic separation with border"></div>
+            <div class="ba-body">
+              <div class="mini-stats">
+                <div class="ms" style="background:#fff;border:2px solid #E4E3DE;"><div class="ms-l">BUGÜN</div><div class="ms-v">5</div></div>
+                <div class="ms" style="background:#fff;border:2px solid #2D9E5F;"><div class="ms-l">BAŞARI</div><div class="ms-v" style="color:#2D9E5F;">%40</div></div>
+                <div class="ms" style="background:#fff;border:2px solid #D63B3B;"><div class="ms-l">KAZA</div><div class="ms-v" style="color:#D63B3B;">%60</div></div>
+              </div>
+              <div style="background:#fff;border-radius:8px;padding:10px 12px;font-size:12px;color:#888;font-weight:600;box-shadow:0 1px 3px rgba(0,0,0,.07);">⏱ TAHMİN · 35 dk içinde...</div>
+              <div class="ba-desc" data-tr="Kartlar beyaz zemine döndü, renk sadece border'da. TAHMİN banner'ı nötr gri yapıldı. Her element kendi semantik ağırlığını koruyor, çakışma yok." data-en="Cards returned to white background, color only on border. PREDICTION banner made neutral grey. Each element carries its own semantic weight without conflict."></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════════════════════════════════════
+     COMPONENT CLOSEUPS
+══════════════════════════════════════════════ -->
+<div class="divider"></div>
+<section>
+  <div class="container animate">
+    <p class="section-tag" data-tr="Bileşen Detayları" data-en="Component Closeups"></p>
+    <h2 class="section-title" data-tr="Uygulamadan <em>yakın kesitler</em>" data-en="Closeups from <em>the app</em>"></h2>
+    <p class="section-body" data-tr="Her bileşen, tek bir kullanım amacına hizmet edecek şekilde tasarlandı. Gereksiz bilgi yok, gereksiz adım yok." data-en="Each component was designed to serve a single purpose. No unnecessary information, no unnecessary steps."></p>
+
+    <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:20px;margin-top:40px;">
+
+      <!-- Stat cards closeup -->
+      <div style="background:var(--white);border-radius:16px;overflow:hidden;box-shadow:0 1px 6px rgba(0,0,0,.06);">
+        <div style="background:#F7F6F2;padding:20px 20px 16px;">
+          <div style="display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;">
+            <div style="background:#fff;border-radius:10px;padding:12px 8px;border:2px solid #E4E3DE;min-width:0;">
+              <div style="font-size:7px;font-weight:700;color:#888;text-transform:uppercase;letter-spacing:.04em;margin-bottom:4px;white-space:nowrap;" data-tr="BUGÜN" data-en="TODAY"></div>
+              <div style="font-size:22px;font-weight:700;color:#1A1A18;font-family:var(--body);">5</div>
+            </div>
+            <div style="background:#fff;border-radius:10px;padding:12px 8px;border:2px solid #2D9E5F;min-width:0;">
+              <div style="font-size:7px;font-weight:700;color:#888;text-transform:uppercase;letter-spacing:.04em;margin-bottom:4px;white-space:nowrap;" data-tr="BAŞARI" data-en="SUCCESS"></div>
+              <div style="font-size:22px;font-weight:700;color:#2D9E5F;font-family:var(--body);">%40</div>
+            </div>
+            <div style="background:#fff;border-radius:10px;padding:12px 8px;border:2px solid #D63B3B;min-width:0;">
+              <div style="font-size:7px;font-weight:700;color:#888;text-transform:uppercase;letter-spacing:.04em;margin-bottom:4px;white-space:nowrap;" data-tr="KAZA" data-en="ACCIDENT"></div>
+              <div style="font-size:22px;font-weight:700;color:#D63B3B;font-family:var(--body);">%60</div>
+            </div>
+          </div>
+        </div>
+        <div style="padding:16px 20px;">
+          <div style="font-size:12px;font-weight:700;color:var(--ink);margin-bottom:4px;" data-tr="Stat Kartları" data-en="Stat Cards"></div>
+          <div style="font-size:12px;color:var(--muted);line-height:1.5;" data-tr="Renkli zemin yerine border kullanıldı. Semantik anlam korunuyor, görsel gürültü azalıyor." data-en="Border instead of colored background. Semantic meaning preserved, visual noise reduced."></div>
+        </div>
+      </div>
+
+      <!-- Quick log buttons closeup -->
+      <div style="background:var(--white);border-radius:16px;overflow:hidden;box-shadow:0 1px 6px rgba(0,0,0,.06);">
+        <div style="background:#F7F6F2;padding:20px;">
+          <div style="background:#fff;border-radius:12px;padding:16px 18px;margin-bottom:10px;display:flex;justify-content:space-between;align-items:center;box-shadow:0 1px 4px rgba(0,0,0,.07);">
+            <span style="font-size:16px;font-weight:700;color:#2D9E5F;" data-tr="Doğru Yer" data-en="Correct Spot"></span>
+            <div style="width:34px;height:34px;border-radius:50%;background:#E8F7EF;display:flex;align-items:center;justify-content:center;color:#2D9E5F;font-size:16px;">✓</div>
+          </div>
+          <div style="background:#fff;border-radius:12px;padding:16px 18px;display:flex;justify-content:space-between;align-items:center;box-shadow:0 1px 4px rgba(0,0,0,.07);">
+            <span style="font-size:16px;font-weight:700;color:#D63B3B;" data-tr="Kaza Oldu" data-en="Accident"></span>
+            <div style="width:34px;height:34px;border-radius:50%;background:#FDEAEA;display:flex;align-items:center;justify-content:center;color:#D63B3B;font-size:16px;">✓</div>
+          </div>
+        </div>
+        <div style="padding:16px 20px;">
+          <div style="font-size:12px;font-weight:700;color:var(--ink);margin-bottom:4px;" data-tr="Hızlı Kayıt" data-en="Quick Log"></div>
+          <div style="font-size:12px;color:var(--muted);line-height:1.5;" data-tr="İki seçenek, sıfır düşünme yükü. Tür seçimi bir sonraki adımda." data-en="Two options, zero cognitive load. Type selection comes next."></div>
+        </div>
+      </div>
+
+      <!-- Prediction banner closeup -->
+      <div style="background:var(--white);border-radius:16px;overflow:hidden;box-shadow:0 1px 6px rgba(0,0,0,.06);">
+        <div style="background:#F7F6F2;padding:20px;">
+          <div style="background:#fff;border-radius:12px;padding:14px 16px;box-shadow:0 1px 4px rgba(0,0,0,.07);margin-bottom:10px;">
+            <div style="font-size:9px;font-weight:700;color:#888;text-transform:uppercase;letter-spacing:.07em;margin-bottom:4px;" data-tr="TAHMİN" data-en="PREDICTION"></div>
+            <div style="font-size:13px;color:#1A1A18;" data-tr="Yaklaşık 35 dk içinde tuvalet zamanı" data-en="Potty time in approx. 35 minutes"></div>
+          </div>
+          <div style="background:#fff;border-radius:12px;padding:12px 14px;box-shadow:0 1px 4px rgba(0,0,0,.07);display:flex;gap:10px;align-items:flex-start;">
+            <div style="font-size:18px;flex-shrink:0;">💡</div>
+            <div style="font-size:12px;color:#555;line-height:1.5;" data-tr="Bugün öğleden sonra başarı oranı düşüyor. Bu saatlerde daha sık dışarı çıkmayı dene." data-en="Success rate drops in the afternoon. Try going out more often during these hours."></div>
+          </div>
+        </div>
+        <div style="padding:16px 20px;">
+          <div style="font-size:12px;font-weight:700;color:var(--ink);margin-bottom:4px;" data-tr="Tahmin & Insight" data-en="Prediction & Insight"></div>
+          <div style="font-size:12px;color:var(--muted);line-height:1.5;" data-tr="Nötr renk — kırmızı kaza kartıyla çakışmıyor. Veriye dayalı, eyleme dönüştürülebilir." data-en="Neutral color — no clash with red accident card. Data-driven, actionable."></div>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- Second row: type picker + history row -->
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:20px;margin-top:20px;">
+
+      <!-- Type picker -->
+      <div style="background:var(--white);border-radius:16px;overflow:hidden;box-shadow:0 1px 6px rgba(0,0,0,.06);">
+        <div style="background:#F7F6F2;padding:20px;display:flex;flex-direction:column;gap:10px;">
+          <div style="background:#fff;border-radius:12px;padding:16px 18px;display:flex;align-items:center;gap:14px;box-shadow:0 1px 4px rgba(0,0,0,.07);">
+            <div style="width:40px;height:40px;border-radius:10px;background:#F7F6F2;display:flex;align-items:center;justify-content:center;">
+              <svg width="22" height="22" viewBox="0 0 28 28" fill="none"><path d="M14 4C14 4 7 11.5 7 16.5C7 20.09 10.13 23 14 23C17.87 23 21 20.09 21 16.5C21 11.5 14 4 14 4Z" stroke="#E8520A" stroke-width="1.8" stroke-linejoin="round"/></svg>
+            </div>
+            <span style="font-size:15px;font-weight:600;color:#1A1A18;" data-tr="Sadece Çiş" data-en="Pee only"></span>
+            <span style="margin-left:auto;color:#CCC;font-size:18px;">›</span>
+          </div>
+          <div style="background:#fff;border-radius:12px;padding:16px 18px;display:flex;align-items:center;gap:14px;box-shadow:0 1px 4px rgba(0,0,0,.07);">
+            <div style="width:40px;height:40px;border-radius:10px;background:#F7F6F2;display:flex;align-items:center;justify-content:center;">
+              <svg width="22" height="22" viewBox="0 0 28 28" fill="none"><ellipse cx="14" cy="20" rx="7" ry="3" stroke="#E8520A" stroke-width="1.8"/><ellipse cx="14" cy="17" rx="5" ry="2.5" stroke="#E8520A" stroke-width="1.8"/><ellipse cx="14" cy="14.5" rx="3.5" ry="2" stroke="#E8520A" stroke-width="1.8"/><path d="M14 12.5C12.5 11 13 9.5 15.5 6.5" stroke="#E8520A" stroke-width="1.8" stroke-linecap="round"/></svg>
+            </div>
+            <span style="font-size:15px;font-weight:600;color:#1A1A18;" data-tr="Sadece Kaka" data-en="Poop only"></span>
+            <span style="margin-left:auto;color:#CCC;font-size:18px;">›</span>
+          </div>
+        </div>
+        <div style="padding:16px 20px;">
+          <div style="font-size:12px;font-weight:700;color:var(--ink);margin-bottom:4px;" data-tr="Tür Seçici" data-en="Type Picker"></div>
+          <div style="font-size:12px;color:var(--muted);line-height:1.5;" data-tr="Özel SVG ikonlar. Emoji yerine marka diline uygun çizgisel sistem." data-en="Custom SVG icons. Line-based system aligned with brand language instead of emoji."></div>
+        </div>
+      </div>
+
+      <!-- History row -->
+      <div style="background:var(--white);border-radius:16px;overflow:hidden;box-shadow:0 1px 6px rgba(0,0,0,.06);">
+        <div style="background:#F7F6F2;padding:20px;display:flex;flex-direction:column;gap:8px;">
+          <div style="background:#fff;border-radius:10px;padding:12px 14px;display:flex;justify-content:space-between;align-items:center;box-shadow:0 1px 3px rgba(0,0,0,.06);">
+            <div>
+              <div style="font-size:13px;font-weight:700;color:#2D9E5F;" data-tr="Doğru Yer · Çiş" data-en="Correct Spot · Pee"></div>
+              <div style="font-size:11px;color:#888;margin-top:2px;">14:23</div>
+            </div>
+            <div style="font-size:11px;color:#CCC;cursor:pointer;padding:4px 8px;border-radius:6px;border:1px solid #EEE;" data-tr="Sil" data-en="Delete"></div>
+          </div>
+          <div style="background:#fff;border-radius:10px;padding:12px 14px;display:flex;justify-content:space-between;align-items:center;box-shadow:0 1px 3px rgba(0,0,0,.06);">
+            <div>
+              <div style="font-size:13px;font-weight:700;color:#D63B3B;" data-tr="Kaza · İkisi Birden" data-en="Accident · Both"></div>
+              <div style="font-size:11px;color:#888;margin-top:2px;">12:05</div>
+            </div>
+            <div style="font-size:11px;color:#CCC;cursor:pointer;padding:4px 8px;border-radius:6px;border:1px solid #EEE;" data-tr="Sil" data-en="Delete"></div>
+          </div>
+          <div style="background:#fff;border-radius:10px;padding:12px 14px;display:flex;justify-content:space-between;align-items:center;box-shadow:0 1px 3px rgba(0,0,0,.06);">
+            <div>
+              <div style="font-size:13px;font-weight:700;color:#2D9E5F;" data-tr="Doğru Yer · Kaka" data-en="Correct Spot · Poop"></div>
+              <div style="font-size:11px;color:#888;margin-top:2px;">09:47</div>
+            </div>
+            <div style="font-size:11px;color:#CCC;cursor:pointer;padding:4px 8px;border-radius:6px;border:1px solid #EEE;" data-tr="Sil" data-en="Delete"></div>
+          </div>
+        </div>
+        <div style="padding:16px 20px;">
+          <div style="font-size:12px;font-weight:700;color:var(--ink);margin-bottom:4px;" data-tr="Geçmiş Kayıtlar + Silme" data-en="History + Delete"></div>
+          <div style="font-size:12px;color:var(--muted);line-height:1.5;" data-tr="Hata yapıldığında kayıt anında silinebilir. Telefonu açmak gerekmez, saat üzerinden de erişilebilir." data-en="Mistaken entries can be deleted instantly. No need to open the phone — also accessible from the watch."></div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════════════════════════════════════
+     PROTOTYPE
+══════════════════════════════════════════════ -->
+<!-- ══════════════════════════════════════════════
+     WHAT I LEARNED
+══════════════════════════════════════════════ -->
+<div class="divider"></div>
+<section>
+  <div class="container animate">
+    <p class="section-tag" data-tr="Öğrendiklerim" data-en="What I Learned"></p>
+    <h2 class="section-title" data-tr="Daha az kapsamlı olmak, <em>daha iyi</em> olmaktı" data-en="Being less ambitious <em>was the better choice</em>"></h2>
+    <div class="learned-card">
+      <div class="lc-left">
+        <div class="lc-num">01</div>
+        <div class="lc-label" data-tr="Ana Çıkarım" data-en="Key Takeaway"></div>
+      </div>
+      <div class="lc-body" data-tr="Bu proje bana scope kısıtlamasının bir UX kararı olduğunu öğretti. Rakip uygulamaları incelerken gördüm ki özellik sayısı artıkça asıl kullanım amacı görünmez hale geliyor. PuppyTrack'i tasarlarken 'buna gerçekten ihtiyaç var mı?' sorusunu her ekrana sormak, sonunda daha güçlü bir ürün ortaya çıkardı. Tasarımcı olarak en zor karar, bir şeyi eklemek değil, çıkarmak." data-en="This project taught me that scope constraint is a UX decision. Looking at competitor apps, I saw how adding more features makes the core use case invisible. By asking 'is this truly necessary?' for every screen in PuppyTrack, I ended up with a stronger product. As a designer, the hardest decision isn't adding something — it's leaving it out."></div>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════════════════════════════════════
+     NEXT STEPS
+══════════════════════════════════════════════ -->
+<div class="divider"></div>
+<section>
+  <div class="container animate">
+    <p class="section-tag" data-tr="Sonraki Adımlar" data-en="Next Steps"></p>
+    <h2 class="section-title" data-tr="MVP'den <em>ürüne</em>" data-en="From MVP <em>to product</em>"></h2>
+    <div class="next-grid">
+      <div class="next-card active">
+        <div class="nc-phase" data-tr="Şu an · MVP" data-en="Now · MVP"></div>
+        <div class="nc-title" data-tr="Tuvalet Takibi" data-en="Potty Tracking"></div>
+        <div class="nc-items" data-tr="Hızlı kayıt · Otomatik analiz · Tahmin · TR/EN" data-en="Quick log · Auto analysis · Prediction · TR/EN"></div>
+      </div>
+      <div class="next-card">
+        <div class="nc-phase" data-tr="Sonraki · v2" data-en="Next · v2"></div>
+        <div class="nc-title" data-tr="Akıllı Saat Entegrasyonu" data-en="Smartwatch Integration"></div>
+        <div class="nc-items" data-tr="Wear OS companion · Tek dokunuşla bilek kaydı · Son kayıttan geçen süre · Samsung Galaxy Watch öncelikli" data-en="Wear OS companion · One-tap wrist logging · Time since last record · Samsung Galaxy Watch first"></div>
+      </div>
+      <div class="next-card">
+        <div class="nc-phase" data-tr="Gelecek · v3" data-en="Future · v3"></div>
+        <div class="nc-title" data-tr="Gamification" data-en="Gamification"></div>
+        <div class="nc-items" data-tr="Rozet kazanma · Streak ödülleri · İlerleme animasyonları · Saat bildirimleri ile entegre" data-en="Badge earning · Streak rewards · Progress animations · Integrated watch notifications"></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════════════════════════════════════
+     CLOSING BANNER
+══════════════════════════════════════════════ -->
+<section style="padding:80px 0 0;">
+  <div class="container">
+    <div style="background:linear-gradient(160deg,#1A1A18 0%,#2C2C28 60%,#3A3530 100%);border-radius:32px;padding:72px 64px;display:flex;align-items:center;justify-content:space-between;gap:48px;flex-wrap:wrap;position:relative;overflow:hidden;">
+      <!-- grain -->
+      <div style="position:absolute;inset:0;opacity:.04;background-image:url('data:image/svg+xml,%3Csvg viewBox=\'0 0 256 256\' xmlns=\'http://www.w3.org/2000/svg\'%3E%3Cfilter id=\'n\'%3E%3CfeTurbulence type=\'fractalNoise\' baseFrequency=\'0.9\' numOctaves=\'4\' stitchTiles=\'stitch\'/%3E%3C/filter%3E%3Crect width=\'100%25\' height=\'100%25\' filter=\'url(%23n)\'/%3E%3C/svg%3E');pointer-events:none;"></div>
+      <!-- left -->
+      <div style="position:relative;z-index:1;flex:1;min-width:260px;">
+        <div style="font-size:11px;font-weight:700;color:rgba(232,82,10,.8);text-transform:uppercase;letter-spacing:.1em;margin-bottom:16px;">🐾 PuppyTrack</div>
+        <h2 style="font-family:var(--display);font-size:clamp(32px,4vw,52px);font-weight:900;color:#fff;line-height:1.05;margin-bottom:20px;" data-tr="Teşekkürler." data-en="Thank you."></h2>
+        <p style="font-size:16px;color:rgba(255,255,255,.45);line-height:1.7;max-width:400px;" data-tr="Bu proje tasarımın sadece görsel değil, davranışsal bir kararlar bütünü olduğunu hatırlatıyor. Her piksel bir neden barındırıyor." data-en="This project is a reminder that design is not just visual — it's a set of behavioral decisions. Every pixel carries a reason."></p>
+      </div>
+      <!-- right: mini component -->
+      <div style="position:relative;z-index:1;flex-shrink:0;">
+        <div style="background:#F2F1ED;border-radius:20px;padding:20px 18px;width:220px;box-shadow:0 24px 48px rgba(0,0,0,.5);">
+          <div style="font-family:var(--display);font-size:13px;font-weight:900;color:var(--primary);margin-bottom:14px;">🐾 PuppyTrack</div>
+          <div style="background:#fff;border-radius:12px;padding:14px 16px;margin-bottom:8px;display:flex;justify-content:space-between;align-items:center;box-shadow:0 1px 3px rgba(0,0,0,.07);">
+            <span style="font-size:14px;font-weight:700;color:#2D9E5F;" data-tr="Doğru Yer" data-en="Correct Spot"></span>
+            <div style="width:28px;height:28px;border-radius:50%;background:#E8F7EF;display:flex;align-items:center;justify-content:center;color:#2D9E5F;font-size:14px;">✓</div>
+          </div>
+          <div style="background:#fff;border-radius:12px;padding:14px 16px;display:flex;justify-content:space-between;align-items:center;box-shadow:0 1px 3px rgba(0,0,0,.07);">
+            <span style="font-size:14px;font-weight:700;color:#D63B3B;" data-tr="Kaza Oldu" data-en="Accident"></span>
+            <div style="width:28px;height:28px;border-radius:50%;background:#FDEAEA;display:flex;align-items:center;justify-content:center;color:#D63B3B;font-size:14px;">✓</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<script>
+// ── Lang system ──────────────────────────────────────────────────────────────
+function setLang(lang) {
+  document.querySelectorAll('[data-tr]').forEach(el => {
+    const val = el.getAttribute('data-' + lang);
+    if (val) {
+      if (el.tagName === 'INPUT' || el.tagName === 'TEXTAREA') {
+        el.placeholder = val;
+      } else {
+        el.innerHTML = val;
+      }
+    }
+  });
+  document.querySelectorAll('.lang-opt').forEach(btn => {
+    btn.classList.toggle('active', btn.textContent === lang.toUpperCase());
+  });
+  document.documentElement.lang = lang;
+}
+
+// ── Scroll animations ────────────────────────────────────────────────────────
+const observer = new IntersectionObserver(entries => {
+  entries.forEach(e => {
+    if (e.isIntersecting) {
+      e.target.classList.add('visible');
+      observer.unobserve(e.target);
+    }
+  });
+}, { threshold: 0.1 });
+
+document.querySelectorAll('.animate').forEach(el => observer.observe(el));
+
+// Default lang
+setLang('tr');
+</script>
+<script>
+function reportHeight(){
+  const h = document.documentElement.scrollHeight;
+  window.parent.postMessage({type:'setHeight',height:h},'*');
+}
+window.addEventListener('load', reportHeight);
+window.addEventListener('resize', reportHeight);
+new MutationObserver(reportHeight).observe(document.body,{childList:true,subtree:true,attributes:true});
+</script>
+</body>
+</html>
