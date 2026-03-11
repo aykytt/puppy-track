@@ -42,7 +42,7 @@ html,body{height:100%;background:#BBBBBB;font-family:var(--body);-webkit-font-sm
 /* FIX 15: focus-visible styles for all interactive elements */
 :focus-visible{outline:2px solid var(--primary);outline-offset:2px;border-radius:4px;}
 .nav-btn:focus-visible{outline:2px solid var(--primary);outline-offset:2px;border-radius:10px;}
-.top-bar{display:flex;justify-content:space-between;align-items:center;margin-bottom:18px;}
+.top-bar{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;}
 .top-right{display:flex;align-items:center;gap:8px;}
 .logo{display:flex;align-items:center;gap:8px;}
 .logo-icon{width:36px;height:36px;border-radius:10px;background:var(--primary-light);display:flex;align-items:center;justify-content:center;font-size:20px;}
@@ -52,8 +52,8 @@ html,body{height:100%;background:#BBBBBB;font-family:var(--body);-webkit-font-sm
 /* FIX 11: lang-btn color #666 for contrast */
 .lang-btn{padding:4px 9px;border:none;border-radius:5px;font-size:11px;font-weight:700;cursor:pointer;font-family:var(--body);transition:all .15s;background:none;color:var(--muted);}
 .lang-btn.active{background:var(--white);color:var(--text);box-shadow:var(--shadow);}
-.page-title{font-family:var(--display);font-size:36px;font-weight:900;line-height:1.1;color:var(--text);margin-bottom:18px;white-space:pre-line;}
-.stat-row{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-bottom:14px;}
+.page-title{font-family:var(--display);font-size:36px;font-weight:900;line-height:1.1;color:var(--text);margin-bottom:12px;white-space:pre-line;}
+.stat-row{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-bottom:10px;}
 .stat-card{border-radius:var(--rs);padding:13px 12px;box-shadow:var(--shadow);background:var(--white);border:2px solid transparent;}
 .stat-card.neutral{border-color:var(--border);}
 .stat-card.green{border-color:var(--success);}
@@ -72,9 +72,9 @@ html,body{height:100%;background:#BBBBBB;font-family:var(--body);-webkit-font-sm
 .a-icon{width:44px;height:44px;border-radius:12px;background:var(--bg);display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0;}
 .a-text{flex:1;font-size:17px;font-weight:600;color:var(--text);}
 .a-arrow{color:var(--muted);font-size:20px;}
-.result-btn{background:var(--white);border-radius:var(--r);padding:24px 20px;margin-bottom:12px;display:flex;align-items:center;justify-content:space-between;box-shadow:var(--shadow);cursor:pointer;transition:all .18s;border:none;width:100%;font-family:var(--body);}
+.result-btn{background:var(--white);border-radius:var(--r);padding:16px 20px;margin-bottom:8px;display:flex;align-items:center;justify-content:space-between;box-shadow:var(--shadow);cursor:pointer;transition:all .18s;border:none;width:100%;font-family:var(--body);}
 .result-btn:hover{transform:translateY(-2px);box-shadow:var(--shadow-md);}
-.r-label{font-size:18px;font-weight:700;}
+.r-label{font-size:16px;font-weight:700;}
 .r-label.g{color:var(--success);}
 .r-label.r{color:var(--danger);}
 .check-c{width:40px;height:40px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:20px;}
@@ -83,11 +83,11 @@ html,body{height:100%;background:#BBBBBB;font-family:var(--body);-webkit-font-sm
 .toast{background:var(--white);border-radius:var(--rs);padding:12px 14px;margin-bottom:12px;display:flex;align-items:center;justify-content:space-between;box-shadow:var(--shadow);animation:slideIn .3s ease;}
 @keyframes slideIn{from{opacity:0;transform:translateY(-8px)}to{opacity:1;transform:translateY(0)}}
 .toast-close{background:none;border:none;font-size:18px;color:var(--muted);cursor:pointer;padding:4px 8px;line-height:1;}
-.pred-banner{background:var(--white);border-radius:var(--rs);padding:13px 15px;margin-bottom:14px;display:flex;align-items:center;gap:10px;box-shadow:var(--shadow);}
+.pred-banner{background:var(--white);border-radius:var(--rs);padding:11px 15px;margin-bottom:10px;display:flex;align-items:center;gap:10px;box-shadow:var(--shadow);}
 /* FIX 5: pred-title 10px→12px */
 .pred-title{font-size:12px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.06em;}
 .pred-text{font-size:13px;color:var(--text);margin-top:2px;}
-.info-banner{background:var(--white);border-radius:var(--rs);padding:13px 15px;margin-bottom:14px;display:flex;align-items:center;gap:10px;box-shadow:var(--shadow);font-size:12px;color:#555;line-height:1.5;}
+.info-banner{background:var(--white);border-radius:var(--rs);padding:11px 15px;margin-bottom:10px;display:flex;align-items:center;gap:10px;box-shadow:var(--shadow);font-size:12px;color:#555;line-height:1.5;}
 .sub-hdr{display:flex;align-items:center;gap:10px;margin-bottom:22px;}
 /* FIX 8: back-btn has aria-label in JSX, keeping visual same */
 .back-btn{background:none;border:none;font-size:24px;cursor:pointer;color:var(--text);padding:4px 8px;line-height:1;}
