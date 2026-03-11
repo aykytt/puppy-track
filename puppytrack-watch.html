@@ -1,0 +1,703 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>PuppyTrack Watch</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Fraunces:wght@700;900&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+:root{
+  --bg:#0A0A0A;
+  --primary:#E8520A;
+  --success:#2D9E5F;
+  --danger:#D63B3B;
+  --watch-bg:#111214;
+  --watch-size:320px;
+  --body:'DM Sans',sans-serif;
+  --display:'Fraunces',serif;
+}
+body{
+  background:var(--bg);
+  font-family:var(--body);
+  min-height:100vh;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:center;
+  gap:32px;
+  padding:40px 20px;
+  -webkit-font-smoothing:antialiased;
+}
+
+/* ── Watch shell ── */
+.watch-shell{
+  position:relative;
+  width:var(--watch-size);
+  height:var(--watch-size);
+  flex-shrink:0;
+}
+.watch-bezel{
+  position:absolute;
+  inset:0;
+  border-radius:50%;
+  background:linear-gradient(145deg,#2A2A2E 0%,#1A1A1C 40%,#111113 100%);
+  box-shadow:
+    0 0 0 3px #333,
+    0 0 0 5px #222,
+    0 24px 60px rgba(0,0,0,.8),
+    inset 0 1px 0 rgba(255,255,255,.06);
+}
+/* Crown button */
+.watch-crown{
+  position:absolute;
+  right:-14px;
+  top:50%;
+  transform:translateY(-50%);
+  width:14px;
+  height:44px;
+  background:linear-gradient(180deg,#3A3A3E,#1E1E20);
+  border-radius:4px;
+  box-shadow:2px 0 6px rgba(0,0,0,.5);
+}
+.watch-crown::after{
+  content:'';
+  position:absolute;
+  inset:4px 2px;
+  border-radius:2px;
+  background:linear-gradient(180deg,#444,#2A2A2A);
+}
+/* Screen */
+.watch-screen{
+  position:absolute;
+  inset:10px;
+  border-radius:50%;
+  background:var(--watch-bg);
+  overflow:hidden;
+  cursor:pointer;
+}
+
+/* ── Screen pages ── */
+.page{
+  position:absolute;
+  inset:0;
+  border-radius:50%;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:center;
+  opacity:0;
+  pointer-events:none;
+  transition:opacity .25s ease, transform .25s ease;
+  transform:scale(.95);
+  overflow:hidden;
+}
+.page.active{
+  opacity:1;
+  pointer-events:all;
+  transform:scale(1);
+}
+.page.exit-left{transform:translateX(-30px) scale(.95);opacity:0;}
+.page.enter-right{transform:translateX(30px) scale(.95);opacity:0;}
+
+/* ── Page: Home ── */
+.p-home{background:radial-gradient(circle at 50% 40%, #1A1A1E 0%, #0D0D0F 100%);}
+.home-time{
+  font-size:11px;font-weight:600;
+  color:rgba(255,255,255,.3);
+  letter-spacing:.08em;
+  text-transform:uppercase;
+  margin-bottom:4px;
+}
+.home-since{
+  font-family:var(--display);
+  font-size:28px;font-weight:900;
+  color:#fff;
+  line-height:1;
+  margin-bottom:2px;
+}
+.home-since-label{
+  font-size:10px;color:rgba(255,255,255,.35);
+  font-weight:600;letter-spacing:.06em;
+  text-transform:uppercase;
+  margin-bottom:16px;
+}
+.home-stats{
+  display:flex;gap:14px;
+  margin-bottom:18px;
+  align-items:center;
+}
+.hs-item{
+  display:flex;align-items:center;gap:5px;
+}
+.hs-dot{width:7px;height:7px;border-radius:50%;}
+.hs-dot.g{background:var(--success);}
+.hs-dot.r{background:var(--danger);}
+.hs-num{font-size:20px;font-weight:700;color:#fff;line-height:1;}
+.home-log-btn{
+  width:72px;height:72px;
+  border-radius:50%;
+  background:var(--primary);
+  border:none;cursor:pointer;
+  display:flex;flex-direction:column;
+  align-items:center;justify-content:center;
+  gap:2px;
+  box-shadow:0 4px 20px rgba(232,82,10,.4);
+  transition:transform .15s, box-shadow .15s;
+  color:#fff;
+  font-family:var(--body);
+}
+.home-log-btn:active{transform:scale(.93);box-shadow:0 2px 10px rgba(232,82,10,.3);}
+.home-log-btn svg{width:22px;height:22px;}
+.home-log-btn span{font-size:9px;font-weight:700;letter-spacing:.05em;text-transform:uppercase;}
+
+/* ── Page: Result (Doğru Yer / Kaza) ── */
+.p-result{background:#0D0D0F;}
+.result-label{
+  font-size:11px;font-weight:700;
+  color:rgba(255,255,255,.35);
+  text-transform:uppercase;letter-spacing:.08em;
+  margin-bottom:16px;
+}
+.result-btns{display:flex;flex-direction:column;gap:10px;width:180px;}
+.result-btn{
+  height:52px;border-radius:16px;
+  border:none;cursor:pointer;
+  font-family:var(--body);
+  font-size:15px;font-weight:700;
+  display:flex;align-items:center;justify-content:space-between;
+  padding:0 16px;
+  transition:transform .12s, opacity .12s;
+}
+.result-btn:active{transform:scale(.96);}
+.result-btn.g{background:rgba(45,158,95,.15);color:var(--success);border:1.5px solid rgba(45,158,95,.3);}
+.result-btn.r{background:rgba(214,59,59,.15);color:var(--danger);border:1.5px solid rgba(214,59,59,.3);}
+.result-btn .rb-icon{width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:14px;}
+.result-btn.g .rb-icon{background:rgba(45,158,95,.2);color:var(--success);}
+.result-btn.r .rb-icon{background:rgba(214,59,59,.2);color:var(--danger);}
+
+/* ── Page: Type (Çiş / Kaka / İkisi) ── */
+.p-type{background:#0D0D0F;}
+.type-header{
+  font-size:11px;font-weight:700;
+  color:rgba(255,255,255,.35);
+  text-transform:uppercase;letter-spacing:.08em;
+  margin-bottom:14px;
+}
+.type-btns{display:flex;flex-direction:column;gap:8px;width:180px;}
+.type-btn{
+  height:46px;border-radius:14px;
+  border:1.5px solid rgba(255,255,255,.1);
+  background:rgba(255,255,255,.05);
+  cursor:pointer;
+  font-family:var(--body);font-size:14px;font-weight:600;
+  color:#fff;
+  display:flex;align-items:center;gap:12px;
+  padding:0 14px;
+  transition:all .12s;
+}
+.type-btn:active{background:rgba(232,82,10,.15);border-color:var(--primary);}
+.type-icon{width:26px;height:26px;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+
+/* ── Page: Confirm ── */
+.p-confirm{background:#0D0D0F;}
+.confirm-ring{
+  width:80px;height:80px;border-radius:50%;
+  display:flex;align-items:center;justify-content:center;
+  margin-bottom:12px;
+  position:relative;
+}
+.confirm-ring.g{background:rgba(45,158,95,.15);border:2px solid rgba(45,158,95,.4);}
+.confirm-ring.r{background:rgba(214,59,59,.15);border:2px solid rgba(214,59,59,.4);}
+.confirm-icon{font-size:28px;}
+.confirm-text{font-size:13px;font-weight:700;color:#fff;margin-bottom:4px;}
+.confirm-sub{font-size:10px;color:rgba(255,255,255,.35);margin-bottom:16px;text-align:center;}
+.undo-btn{
+  background:rgba(255,255,255,.07);
+  border:1px solid rgba(255,255,255,.12);
+  border-radius:20px;padding:7px 18px;
+  font-family:var(--body);font-size:11px;font-weight:600;
+  color:rgba(255,255,255,.5);cursor:pointer;
+  transition:all .12s;
+}
+.undo-btn:active{background:rgba(255,255,255,.12);color:#fff;}
+
+/* ── Page: Detail (swipe up from home) ── */
+.p-detail{background:radial-gradient(circle at 50% 40%, #1A1A1E 0%, #0D0D0F 100%);}
+.detail-title{
+  font-size:10px;font-weight:700;
+  color:rgba(255,255,255,.3);
+  text-transform:uppercase;letter-spacing:.08em;
+  margin-bottom:14px;
+}
+.detail-row{
+  display:flex;gap:8px;margin-bottom:10px;
+  align-items:center;
+}
+.dr-label{
+  display:flex;align-items:center;gap:6px;
+  width:60px;
+}
+.dr-dot{width:7px;height:7px;border-radius:50%;flex-shrink:0;}
+.dr-dot.g{background:var(--success);}
+.dr-dot.r{background:var(--danger);}
+.dr-name{font-size:11px;font-weight:600;color:rgba(255,255,255,.5);}
+.dr-pills{display:flex;gap:6px;}
+.dr-pill{
+  display:flex;align-items:center;gap:4px;
+  background:rgba(255,255,255,.07);
+  border-radius:20px;padding:4px 10px;
+}
+.dr-pill svg{width:12px;height:12px;opacity:.7;}
+.dr-pill span{font-size:12px;font-weight:700;color:#fff;}
+.detail-back{
+  margin-top:12px;
+  font-size:10px;font-weight:600;
+  color:rgba(255,255,255,.25);
+  display:flex;align-items:center;gap:4px;
+}
+
+/* ── Bottom label ── */
+.watch-label{
+  font-size:12px;font-weight:600;
+  color:rgba(255,255,255,.2);
+  letter-spacing:.04em;
+}
+
+/* ── Navigation hint ── */
+.nav-hint{
+  display:flex;gap:6px;align-items:center;
+}
+.hint-dot{
+  width:6px;height:6px;border-radius:50%;
+  background:rgba(255,255,255,.15);
+  transition:background .2s;
+}
+.hint-dot.active{background:var(--primary);}
+
+/* ── Back button (top-left of screen) ── */
+.screen-back{
+  position:absolute;
+  top:28px;left:50%;
+  transform:translateX(-50%);
+  font-size:9px;font-weight:700;
+  color:rgba(255,255,255,.25);
+  text-transform:uppercase;letter-spacing:.06em;
+  cursor:pointer;
+  display:none;
+  z-index:10;
+}
+.screen-back.visible{display:block;}
+
+/* ── Detail swipe hint on home ── */
+.swipe-hint{
+  position:absolute;
+  bottom:28px;
+  font-size:9px;font-weight:600;
+  color:rgba(255,255,255,.2);
+  letter-spacing:.05em;
+  text-transform:uppercase;
+  display:flex;flex-direction:column;
+  align-items:center;gap:2px;
+}
+.swipe-arrow{
+  animation:swipeUp 1.8s ease-in-out infinite;
+  font-size:12px;
+  opacity:.3;
+}
+@keyframes swipeUp{
+  0%,100%{transform:translateY(0);opacity:.2;}
+  50%{transform:translateY(-4px);opacity:.5;}
+}
+
+/* ── Confirm animation ── */
+@keyframes popIn{
+  0%{transform:scale(.6);opacity:0;}
+  70%{transform:scale(1.1);}
+  100%{transform:scale(1);opacity:1;}
+}
+.pop{animation:popIn .35s ease forwards;}
+
+/* ── Info panel ── */
+.info-panel{
+  background:rgba(255,255,255,.04);
+  border:1px solid rgba(255,255,255,.08);
+  border-radius:20px;
+  padding:24px 28px;
+  max-width:360px;
+  width:100%;
+}
+.ip-title{
+  font-size:13px;font-weight:700;
+  color:rgba(255,255,255,.6);
+  margin-bottom:16px;
+  text-transform:uppercase;letter-spacing:.07em;
+}
+.ip-row{
+  display:flex;align-items:flex-start;gap:12px;
+  margin-bottom:12px;
+}
+.ip-row:last-child{margin-bottom:0;}
+.ip-num{
+  font-family:var(--display);
+  font-size:18px;font-weight:900;
+  color:var(--primary);
+  width:20px;flex-shrink:0;
+  line-height:1.2;
+}
+.ip-text{font-size:13px;color:rgba(255,255,255,.45);line-height:1.6;}
+</style>
+</head>
+<body>
+
+<div class="watch-shell">
+  <div class="watch-bezel"></div>
+  <div class="watch-crown"></div>
+  <div class="watch-screen" id="watchScreen">
+
+    <!-- Back button -->
+    <div class="screen-back" id="screenBack" onclick="goBack()">← Geri</div>
+
+    <!-- ══ PAGE: HOME ══ -->
+    <div class="page p-home active" id="pageHome">
+      <div class="home-time" id="homeClock">09:41</div>
+      <div class="home-since" id="homeSince">47 dk</div>
+      <div class="home-since-label">son kayıttan</div>
+      <div class="home-stats">
+        <div class="hs-item">
+          <div class="hs-dot g"></div>
+          <div class="hs-num" id="homeSuccess">3</div>
+        </div>
+        <div style="width:1px;height:20px;background:rgba(255,255,255,.1);"></div>
+        <div class="hs-item">
+          <div class="hs-dot r"></div>
+          <div class="hs-num" id="homeAccident">2</div>
+        </div>
+      </div>
+      <button class="home-log-btn" onclick="goTo('pageResult')">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round">
+          <line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/>
+        </svg>
+        <span>Kayıt</span>
+      </button>
+      <div class="swipe-hint" onclick="goTo('pageDetail')">
+        <div class="swipe-arrow">↑</div>
+        <span>detay</span>
+      </div>
+    </div>
+
+    <!-- ══ PAGE: RESULT ══ -->
+    <div class="page p-result" id="pageResult">
+      <div class="result-label">Ne oldu?</div>
+      <div class="result-btns">
+        <button class="result-btn g" onclick="selectResult('success')">
+          <span>Doğru Yer</span>
+          <div class="rb-icon">✓</div>
+        </button>
+        <button class="result-btn r" onclick="selectResult('accident')">
+          <span>Kaza Oldu</span>
+          <div class="rb-icon">✗</div>
+        </button>
+      </div>
+    </div>
+
+    <!-- ══ PAGE: TYPE ══ -->
+    <div class="page p-type" id="pageType">
+      <div class="type-header">Tür seç</div>
+      <div class="type-btns">
+        <button class="type-btn" onclick="selectType('pee')">
+          <div class="type-icon">
+            <svg width="18" height="18" viewBox="0 0 28 28" fill="none">
+              <path d="M14 4C14 4 7 11.5 7 16.5C7 20.09 10.13 23 14 23C17.87 23 21 20.09 21 16.5C21 11.5 14 4 14 4Z" stroke="#E8520A" stroke-width="1.8" stroke-linejoin="round"/>
+            </svg>
+          </div>
+          <span>Sadece Çiş</span>
+        </button>
+        <button class="type-btn" onclick="selectType('poop')">
+          <div class="type-icon">
+            <svg width="18" height="18" viewBox="0 0 28 28" fill="none">
+              <ellipse cx="14" cy="20" rx="7" ry="3" stroke="#E8520A" stroke-width="1.8"/>
+              <ellipse cx="14" cy="17" rx="5" ry="2.5" stroke="#E8520A" stroke-width="1.8"/>
+              <ellipse cx="14" cy="14.5" rx="3.5" ry="2" stroke="#E8520A" stroke-width="1.8"/>
+              <path d="M14 12.5C12.5 11 13 9.5 15.5 6.5" stroke="#E8520A" stroke-width="1.8" stroke-linecap="round"/>
+            </svg>
+          </div>
+          <span>Sadece Kaka</span>
+        </button>
+        <button class="type-btn" onclick="selectType('both')">
+          <div class="type-icon">
+            <svg width="18" height="18" viewBox="0 0 28 28" fill="none">
+              <path d="M9 5C9 5 5 9.5 5 12.5C5 14.9 6.8 16.5 9 16.5C11.2 16.5 13 14.9 13 12.5C13 9.5 9 5 9 5Z" stroke="#E8520A" stroke-width="1.6" stroke-linejoin="round"/>
+              <ellipse cx="20" cy="22" rx="4.5" ry="1.8" stroke="#E8520A" stroke-width="1.5"/>
+              <ellipse cx="20" cy="20" rx="3.2" ry="1.5" stroke="#E8520A" stroke-width="1.5"/>
+              <ellipse cx="20" cy="18.4" rx="2.2" ry="1.2" stroke="#E8520A" stroke-width="1.5"/>
+            </svg>
+          </div>
+          <span>İkisi Birden</span>
+        </button>
+      </div>
+    </div>
+
+    <!-- ══ PAGE: CONFIRM ══ -->
+    <div class="page p-confirm" id="pageConfirm">
+      <div class="confirm-ring" id="confirmRing">
+        <div class="confirm-icon" id="confirmIcon"></div>
+      </div>
+      <div class="confirm-text" id="confirmText"></div>
+      <div class="confirm-sub" id="confirmSub"></div>
+      <button class="undo-btn" onclick="undoLast()">↩ Geri Al</button>
+    </div>
+
+    <!-- ══ PAGE: DETAIL ══ -->
+    <div class="page p-detail" id="pageDetail">
+      <div class="detail-title">Bugün</div>
+      <div class="detail-row">
+        <div class="dr-label">
+          <div class="dr-dot g"></div>
+          <div class="dr-name">Başarı</div>
+        </div>
+        <div class="dr-pills">
+          <div class="dr-pill">
+            <svg viewBox="0 0 28 28" fill="none"><path d="M14 4C14 4 7 11.5 7 16.5C7 20.09 10.13 23 14 23C17.87 23 21 20.09 21 16.5C21 11.5 14 4 14 4Z" stroke="#fff" stroke-width="2" stroke-linejoin="round"/></svg>
+            <span id="detailSuccessPee">2</span>
+          </div>
+          <div class="dr-pill">
+            <svg viewBox="0 0 28 28" fill="none"><ellipse cx="14" cy="20" rx="7" ry="3" stroke="#fff" stroke-width="2"/><ellipse cx="14" cy="17" rx="5" ry="2.5" stroke="#fff" stroke-width="2"/><ellipse cx="14" cy="14.5" rx="3.5" ry="2" stroke="#fff" stroke-width="2"/><path d="M14 12.5C12.5 11 13 9.5 15.5 6.5" stroke="#fff" stroke-width="2" stroke-linecap="round"/></svg>
+            <span id="detailSuccessPoop">1</span>
+          </div>
+        </div>
+      </div>
+      <div class="detail-row">
+        <div class="dr-label">
+          <div class="dr-dot r"></div>
+          <div class="dr-name">Kaza</div>
+        </div>
+        <div class="dr-pills">
+          <div class="dr-pill">
+            <svg viewBox="0 0 28 28" fill="none"><path d="M14 4C14 4 7 11.5 7 16.5C7 20.09 10.13 23 14 23C17.87 23 21 20.09 21 16.5C21 11.5 14 4 14 4Z" stroke="#fff" stroke-width="2" stroke-linejoin="round"/></svg>
+            <span id="detailAccidentPee">1</span>
+          </div>
+          <div class="dr-pill">
+            <svg viewBox="0 0 28 28" fill="none"><ellipse cx="14" cy="20" rx="7" ry="3" stroke="#fff" stroke-width="2"/><ellipse cx="14" cy="17" rx="5" ry="2.5" stroke="#fff" stroke-width="2"/><ellipse cx="14" cy="14.5" rx="3.5" ry="2" stroke="#fff" stroke-width="2"/><path d="M14 12.5C12.5 11 13 9.5 15.5 6.5" stroke="#fff" stroke-width="2" stroke-linecap="round"/></svg>
+            <span id="detailAccidentPoop">1</span>
+          </div>
+        </div>
+      </div>
+      <div class="detail-back" onclick="goTo('pageHome')">↓ kapat</div>
+    </div>
+
+  </div><!-- /watch-screen -->
+</div><!-- /watch-shell -->
+
+<!-- Nav dots -->
+<div class="nav-hint" id="navHint">
+  <div class="hint-dot active" id="dot0"></div>
+  <div class="hint-dot" id="dot1"></div>
+  <div class="hint-dot" id="dot2"></div>
+  <div class="hint-dot" id="dot3"></div>
+  <div class="hint-dot" id="dot4"></div>
+</div>
+
+<!-- Info -->
+<div class="info-panel">
+  <div class="ip-title">Nasıl kullanılır?</div>
+  <div class="ip-row"><div class="ip-num">1</div><div class="ip-text">Ana ekrandan <strong style="color:rgba(255,255,255,.7)">turuncu butona</strong> bas — Doğru Yer veya Kaza seç</div></div>
+  <div class="ip-row"><div class="ip-num">2</div><div class="ip-text">Tür seç: Çiş / Kaka / İkisi Birden. Kayıt tamamlanır.</div></div>
+  <div class="ip-row"><div class="ip-num">3</div><div class="ip-text">Hata yaptıysan onay ekranında <strong style="color:rgba(255,255,255,.7)">↩ Geri Al</strong> ile sil</div></div>
+  <div class="ip-row"><div class="ip-num">4</div><div class="ip-text">Ana ekranda <strong style="color:rgba(255,255,255,.7)">↑ detay</strong>'a tıkla — tür bazlı breakdown gör</div></div>
+</div>
+
+<script>
+// ── State ────────────────────────────────────────────────────────────────────
+const state = {
+  success: { pee: 2, poop: 1 },
+  accident: { pee: 1, poop: 1 },
+  lastResult: null,
+  lastType: null,
+  currentResult: null,
+  history: ['pageHome'],
+  sinceMinutes: 47,
+};
+
+const pageOrder = {
+  pageHome: 0,
+  pageResult: 1,
+  pageType: 2,
+  pageConfirm: 3,
+  pageDetail: 4,
+};
+
+// ── Navigation ───────────────────────────────────────────────────────────────
+function goTo(pageId) {
+  const current = state.history[state.history.length - 1];
+  if (current === pageId) return;
+
+  document.getElementById(current).classList.remove('active');
+  document.getElementById(current).classList.add('exit-left');
+  setTimeout(() => document.getElementById(current).classList.remove('exit-left'), 300);
+
+  const next = document.getElementById(pageId);
+  next.classList.add('enter-right');
+  requestAnimationFrame(() => {
+    next.classList.remove('enter-right');
+    next.classList.add('active');
+  });
+
+  state.history.push(pageId);
+  updateNav(pageId);
+  updateBackBtn();
+}
+
+function goBack() {
+  if (state.history.length <= 1) return;
+  const current = state.history.pop();
+  const prev = state.history[state.history.length - 1];
+
+  document.getElementById(current).classList.remove('active');
+  document.getElementById(prev).classList.add('active');
+  updateNav(prev);
+  updateBackBtn();
+}
+
+function updateNav(pageId) {
+  for (let i = 0; i < 5; i++) {
+    document.getElementById('dot' + i).classList.remove('active');
+  }
+  const idx = pageOrder[pageId] ?? 0;
+  document.getElementById('dot' + idx).classList.add('active');
+}
+
+function updateBackBtn() {
+  const back = document.getElementById('screenBack');
+  const current = state.history[state.history.length - 1];
+  back.classList.toggle('visible', state.history.length > 1 && current !== 'pageConfirm');
+}
+
+// ── Logging ──────────────────────────────────────────────────────────────────
+function selectResult(result) {
+  state.currentResult = result;
+  goTo('pageType');
+}
+
+function selectType(type) {
+  const result = state.currentResult;
+  const typeKey = type === 'both' ? null : type === 'pee' ? 'pee' : 'poop';
+
+  // Save last for undo
+  state.lastResult = result;
+  state.lastType = type;
+
+  // Update counts
+  if (result === 'success') {
+    if (type === 'pee' || type === 'both') state.success.pee++;
+    if (type === 'poop' || type === 'both') state.success.poop++;
+  } else {
+    if (type === 'pee' || type === 'both') state.accident.pee++;
+    if (type === 'poop' || type === 'both') state.accident.poop++;
+  }
+
+  state.sinceMinutes = 0;
+  updateHomeStats();
+  showConfirm(result, type);
+}
+
+function showConfirm(result, type) {
+  const ring = document.getElementById('confirmRing');
+  const icon = document.getElementById('confirmIcon');
+  const text = document.getElementById('confirmText');
+  const sub = document.getElementById('confirmSub');
+
+  ring.className = 'confirm-ring ' + (result === 'success' ? 'g' : 'r');
+  icon.textContent = result === 'success' ? '✓' : '✗';
+  icon.classList.add('pop');
+  setTimeout(() => icon.classList.remove('pop'), 400);
+
+  text.textContent = result === 'success' ? 'Doğru Yer' : 'Kaza Oldu';
+  const typeLabel = type === 'pee' ? 'Çiş' : type === 'poop' ? 'Kaka' : 'İkisi';
+  sub.textContent = typeLabel + ' · kaydedildi';
+
+  // Clear history and go to confirm
+  state.history = ['pageHome', 'pageConfirm'];
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  document.getElementById('pageConfirm').classList.add('active');
+  updateNav('pageConfirm');
+  updateBackBtn();
+
+  // Auto return to home after 2.5s
+  setTimeout(() => {
+    if (state.history[state.history.length - 1] === 'pageConfirm') {
+      state.history = ['pageHome'];
+      document.getElementById('pageConfirm').classList.remove('active');
+      document.getElementById('pageHome').classList.add('active');
+      updateNav('pageHome');
+      updateBackBtn();
+    }
+  }, 2500);
+}
+
+function undoLast() {
+  if (!state.lastResult) return;
+  const result = state.lastResult;
+  const type = state.lastType;
+
+  if (result === 'success') {
+    if (type === 'pee' || type === 'both') state.success.pee = Math.max(0, state.success.pee - 1);
+    if (type === 'poop' || type === 'both') state.success.poop = Math.max(0, state.success.poop - 1);
+  } else {
+    if (type === 'pee' || type === 'both') state.accident.pee = Math.max(0, state.accident.pee - 1);
+    if (type === 'poop' || type === 'both') state.accident.poop = Math.max(0, state.accident.poop - 1);
+  }
+
+  state.lastResult = null;
+  state.lastType = null;
+  state.sinceMinutes = 47;
+  updateHomeStats();
+
+  state.history = ['pageHome'];
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  document.getElementById('pageHome').classList.add('active');
+  updateNav('pageHome');
+  updateBackBtn();
+}
+
+// ── Stats update ─────────────────────────────────────────────────────────────
+function updateHomeStats() {
+  const total_s = state.success.pee + state.success.poop;
+  const total_a = state.accident.pee + state.accident.poop;
+  document.getElementById('homeSuccess').textContent = total_s;
+  document.getElementById('homeAccident').textContent = total_a;
+  document.getElementById('homeSince').textContent = state.sinceMinutes === 0 ? 'Az önce' : state.sinceMinutes + ' dk';
+
+  // Detail page
+  document.getElementById('detailSuccessPee').textContent = state.success.pee;
+  document.getElementById('detailSuccessPoop').textContent = state.success.poop;
+  document.getElementById('detailAccidentPee').textContent = state.accident.pee;
+  document.getElementById('detailAccidentPoop').textContent = state.accident.poop;
+}
+
+// ── Clock ────────────────────────────────────────────────────────────────────
+function updateClock() {
+  const now = new Date();
+  const h = String(now.getHours()).padStart(2, '0');
+  const m = String(now.getMinutes()).padStart(2, '0');
+  document.getElementById('homeClock').textContent = h + ':' + m;
+}
+updateClock();
+setInterval(updateClock, 10000);
+
+// ── Swipe gesture on watch screen ────────────────────────────────────────────
+let touchStartY = 0;
+const screen = document.getElementById('watchScreen');
+screen.addEventListener('touchstart', e => { touchStartY = e.touches[0].clientY; }, { passive: true });
+screen.addEventListener('touchend', e => {
+  const dy = touchStartY - e.changedTouches[0].clientY;
+  const current = state.history[state.history.length - 1];
+  if (dy > 40 && current === 'pageHome') goTo('pageDetail');
+  if (dy < -40 && current === 'pageDetail') goTo('pageHome');
+}, { passive: true });
+
+// Init
+updateHomeStats();
+</script>
+</body>
+</html>
